@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   @ViewChild('container') container!: ElementRef;
   title = 'luis-v2';
   stations: Map<string,string> = new Map();
+  components: Map<string, string> = new Map();
 
   constructor(private dataProvider: DataproviderService) {}
 
@@ -35,4 +36,21 @@ export class AppComponent implements OnInit {
  addStation(key: string, value: string) {
     this.stations.set(key, value);
  }
+
+
+  onStationSelected(event: Event) {
+    const target = event.target as HTMLSelectElement; // Cast event.target to HTMLSelectElement
+    const selectedStationId = target.value; // Now it's safe to access value
+    console.log('Selected Station ID:', selectedStationId);
+
+    const stationValue = this.stations.get(selectedStationId); // Get the station name from the Map
+
+    if (stationValue) {
+      this.dataProvider.getAvailableComponents(stationValue).subscribe(
+        (html: string) => {
+          this.components = this.dataProvider.parseComponentsForSelectedStation(html);
+        },
+      );
+    }
+  }
 }

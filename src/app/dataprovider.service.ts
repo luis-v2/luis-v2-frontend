@@ -10,6 +10,9 @@ export class DataproviderService {
 
   constructor(private httpClient: HttpClient) { }
 
+  STATION:string = 'station1';
+  KOMPONENTE:string = 'komponente1';
+
   getDemoDataHTML() {
     return new Observable(obs => {
       const url = "https://corsproxy.io/?https://www.umwelt.steiermark.at/luft2/export.php?station1=164&station2=&komponente1=4&station3=&station4=&komponente2=&von_tag=1&von_monat=10&von_jahr=2024&mittelwert=1&bis_tag=4&bis_monat=10&bis_jahr=2024";
@@ -26,11 +29,33 @@ export class DataproviderService {
     return this.httpClient.get(url, { responseType: 'text' });
   }
 
+  getAvailableComponents(station: string): Observable<string> {
+    const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?' + this.STATION + "=" + station;
+    return this.httpClient.get(url, { responseType: 'text' });
+  }
+
   parseStations(html: string): Map<string, string> {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
     const selectElement = doc.querySelector('select[name="station1"]');
+
+    // null check
+    if (!selectElement) {
+      return new Map();
+    }
+
+    return new Map<string, string>(
+      Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
+        .filter((option: HTMLOptionElement) => option.value)
+        .map((option: HTMLOptionElement) => [option.textContent || '', option.value])
+    );
+  }
+
+  parseComponentsForSelectedStation(html: string): Map<string, string> {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const selectElement = doc.querySelector('select[name="komponente1"]');
 
     // null check
     if (!selectElement) {
