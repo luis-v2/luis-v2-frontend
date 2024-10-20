@@ -20,4 +20,23 @@ export class DataproviderService {
       });
     });
   }
+
+  getAvailableStations(): Observable<string> {
+    const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php';
+    return this.httpClient.get(url, { responseType: 'text' });
+  }
+
+  parseStations(html: string): string [] {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const selectElement = doc.querySelector('select[name="station1"]');
+    // null check
+    if (!selectElement) {
+      return [];
+    }
+
+    return Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
+      .map((option: HTMLOptionElement) => option.textContent || '');
+  }
 }
