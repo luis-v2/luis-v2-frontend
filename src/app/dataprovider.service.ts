@@ -26,17 +26,20 @@ export class DataproviderService {
     return this.httpClient.get(url, { responseType: 'text' });
   }
 
-  parseStations(html: string): string [] {
+  parseStations(html: string): Map<string, string> {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
     const selectElement = doc.querySelector('select[name="station1"]');
+
     // null check
     if (!selectElement) {
-      return [];
+      return new Map();
     }
 
-    return Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
-      .map((option: HTMLOptionElement) => option.textContent || '');
+    return new Map<string, string>(
+      Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
+        .map((option: HTMLOptionElement) => [option.textContent || '', option.id])
+    );
   }
 }

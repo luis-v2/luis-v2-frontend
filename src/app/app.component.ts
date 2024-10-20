@@ -13,7 +13,7 @@ import { DataproviderService } from './dataprovider.service';
 export class AppComponent implements OnInit {
   @ViewChild('container') container!: ElementRef;
   title = 'luis-v2';
-  stations: string[] = [];
+  stations: Map<string,string> = new Map();
 
   constructor(private dataProvider: DataproviderService) {}
 
@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     )
   }
 
- addStation(station: string) {
-    this.stations.push(station);
+ addStation(key: string, value: string) {
+    this.stations.set(key, value);
  }
 }
