@@ -39,7 +39,8 @@ export class DataproviderService {
 
     return new Map<string, string>(
       Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
-        .map((option: HTMLOptionElement) => [option.textContent || '', option.id])
+        .filter((option: HTMLOptionElement) => option.value)
+        .map((option: HTMLOptionElement) => [option.textContent || '', option.value])
     );
   }
 }
