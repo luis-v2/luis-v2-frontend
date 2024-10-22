@@ -1,3 +1,15 @@
 <div class="card">
+    <p-dropdown 
+        [options]="stations" 
+        [(ngModel)]="selectedStation" 
+        optionLabel="name" 
+        placeholder="Station auswählen ..."
+        (onChange)="onStationSelect($event)"/>
+
     
+    <p-multiSelect 
+        [options]="selectedStation?.availableComponents" 
+        [(ngModel)]="selectedComponents" 
+        optionLabel="name" 
+        placeholder="Komponenten auswählen ..." />
 </div>

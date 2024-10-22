@@ -23,38 +23,5 @@ export class AppComponent implements OnInit {
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
-    this.dataProvider.getDemoDataHTML().subscribe(r => {
-      this.container.nativeElement.innerHTML = r;
-    });
-    this.dataProvider.getAvailableStations().subscribe(
-      (html: string) => {
-        this.stations = this.dataProvider.parseStations(html);
-        console.log("INLV Start:");
-        console.log(this.stations);
-        console.log("INLV Stop");
-
-      }
-    )
-  }
-
- addStation(key: string, value: string) {
-    this.stations.set(key, value);
- }
-
-
-  onStationSelected(event: Event) {
-    const target = event.target as HTMLSelectElement; // Cast event.target to HTMLSelectElement
-    const selectedStationId = target.value; // Now it's safe to access value
-    console.log('Selected Station ID:', selectedStationId);
-
-    const stationValue = this.stations.get(selectedStationId); // Get the station name from the Map
-
-    if (stationValue) {
-      this.dataProvider.getAvailableComponents(stationValue).subscribe(
-        (html: string) => {
-          this.components = this.dataProvider.parseComponentsForSelectedStation(html);
-        },
-      );
-    }
   }
 }

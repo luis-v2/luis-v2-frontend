@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as xlsx from 'xlsx';
+import { Station } from '../interfaces/station.interface';
+import { StationComponent } from '../interfaces/station-component.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,17 +26,35 @@ export class DataproviderService {
     });
   }
 
-  getAvailableStations(): Observable<string> {
-    const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php';
-    return this.httpClient.get(url, { responseType: 'text' });
+  getAvailableStations(): Observable<Station[]> {
+    return new Observable<Station[]>(obs => {
+      const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php';
+
+      this.httpClient.get(url, { responseType: 'text' }).subscribe(r => {
+        obs.next(this.parseStations(r));
+      });
+    });
   }
 
-  getAvailableComponents(station: string): Observable<string> {
-    const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?' + this.STATION + "=" + station;
-    return this.httpClient.get(url, { responseType: 'text' });
+  getAvailableComponents(station: Station): Observable<void> {
+    return new Observable(obs => {
+
+      if (station.availableComponents) { // if already loaded => return
+        obs.next();
+        return;
+      }
+
+      const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?' + this.STATION + "=" + station.id;
+
+      return this.httpClient.get(url, { responseType: 'text' }).subscribe(r => {
+        this.parseComponentsForSelectedStation(r, station);
+        obs.next();
+      });
+    });
+
   }
 
-  parseStations(html: string): Map<string, string> {
+  private parseStations(html: string): Station[] {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
@@ -42,30 +62,24 @@ export class DataproviderService {
 
     // null check
     if (!selectElement) {
-      return new Map();
+      return [];
     }
 
-    return new Map<string, string>(
-      Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
-        .filter((option: HTMLOptionElement) => option.value)
-        .map((option: HTMLOptionElement) => [option.textContent || '', option.value])
-    );
+    return Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
+    .filter((option: HTMLOptionElement) => option.value)
+    .map((option: HTMLOptionElement) => <Station>{ id: Number(option.value), name: option.textContent || ''});
   }
 
-  parseComponentsForSelectedStation(html: string): Map<string, string> {
+  private parseComponentsForSelectedStation(html: string, station: Station): void {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const selectElement = doc.querySelector('select[name="komponente1"]');
 
-    // null check
     if (!selectElement) {
-      return new Map();
+      return;
     }
-
-    return new Map<string, string>(
-      Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
-        .filter((option: HTMLOptionElement) => option.value)
-        .map((option: HTMLOptionElement) => [option.textContent || '', option.value])
-    );
+    station.availableComponents = Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
+                                    .filter((option: HTMLOptionElement) => option.value)
+                                    .map((option: HTMLOptionElement) => <StationComponent>{ id: Number(option.value), name: option.textContent || '' });
   }
 }
