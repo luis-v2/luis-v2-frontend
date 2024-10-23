@@ -5,11 +5,17 @@
         optionLabel="name" 
         placeholder="Station auswählen ..."
         (onChange)="onStationSelect($event)"/>
-
     
     <p-multiSelect 
         [options]="selectedStation?.availableComponents" 
         [(ngModel)]="selectedComponents" 
         optionLabel="name" 
         placeholder="Komponenten auswählen ..." />
+
+    <p-calendar 
+        [(ngModel)]="dateRange" 
+        selectionMode="range" 
+        [readonlyInput]="true" />
+
+    <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents || selectedComponents.length == 0 || !dateRange || dateRange.length < 2"/>
 </div>

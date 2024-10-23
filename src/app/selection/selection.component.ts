@@ -5,11 +5,13 @@ import { Station } from '../../interfaces/station.interface';
 import { DataproviderService } from '../dataprovider.service';
 import { FormsModule } from '@angular/forms';
 import { StationComponent } from '../../interfaces/station-component.interface';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
 
 @Component({
   selector: 'luis-selection',
   standalone: true,
-  imports: [DropdownModule, FormsModule, MultiSelectModule],
+  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule],
   templateUrl: './selection.component.html',
   styleUrl: './selection.component.scss'
 })
@@ -17,6 +19,7 @@ export class SelectionComponent implements OnInit {
   stations?: Station[];
   selectedStation?: Station;
   selectedComponents?: StationComponent[];
+  dateRange?: Date[];
 
   constructor(private dataProvider: DataproviderService) {}
 
@@ -32,9 +35,11 @@ export class SelectionComponent implements OnInit {
 
     this.dataProvider.getAvailableComponents(station).subscribe(() => {
       // stop loading ?
-      console.log(station);
     });
-    
+  }
+
+  gatherData() {
+    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!).subscribe();
   }
 
 }

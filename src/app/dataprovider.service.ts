@@ -1,54 +1,78 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { EventEmitter, Injectable } from '@angular/core';
+import { Observable, zip } from 'rxjs';
 import * as xlsx from 'xlsx';
 import { Station } from '../interfaces/station.interface';
 import { StationComponent } from '../interfaces/station-component.interface';
 import { Utils } from './utils';
 import { RawXlsData } from '../interfaces/rawXlsData.interface';
 import { DataPoint } from '../interfaces/dataPoint.interface';
+import { RawMeasurements } from '../interfaces/rawMeasurements.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataproviderService {
+  dataLoaded: EventEmitter<DataPoint[]>;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+    this.dataLoaded = new EventEmitter<DataPoint[]>(); // übergangslösung
+  }
 
   STATION:string = 'station1';
   KOMPONENTE:string = 'komponente1';
+  TEMPURL: string = 'https://temp.temp/'; // URL Builder has problems building the corsproxy url so we use this in the meantime and replace it later
+  EXPORTURL: string = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/export.php';
+  SCRAPEURL: string = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?';
 
-  getDemoDataHTML() {
+  getDataPoints(station: Station, components: StationComponent[], range: Date[]) {
     return new Observable<DataPoint[]>(obs => {
-      const url = "https://corsproxy.io/?https://app.luis.steiermark.at/luft2/export.php?station1=178&station2=&komponente1=125&station3=&station4=&komponente2=&von_tag=20&von_monat=10&von_jahr=2024&mittelwert=1&bis_tag=23&bis_monat=10&bis_jahr=2024";
+      var subs: Observable<RawMeasurements>[] = [];
 
-      this.httpClient.get(url, { responseType: 'arraybuffer'}).subscribe(r => {
-        var wb = xlsx.read(r);
+      components.forEach(c => {
+        var url = new URL(this.TEMPURL);
+        url.searchParams.append(this.STATION, station.id.toString());
+        url.searchParams.append(this.KOMPONENTE, c.id.toString());
 
-        var raw = <RawXlsData[]>xlsx.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: ['date', 'time', 'value']}).slice(3); // first 3 rows contain no data
+        url.searchParams.append('von_tag', range[0].getDay().toString());
+        url.searchParams.append('von_monat', range[0].getMonth().toString());
+        url.searchParams.append('von_jahr', range[0].getFullYear().toString());
 
-        var output: DataPoint[] = [];
+        url.searchParams.append('bis_tag', range[1].getDay().toString());
+        url.searchParams.append('bis_monat', range[1].getMonth().toString());
+        url.searchParams.append('bis_jahr', range[1].getFullYear().toString());
 
-        raw.forEach(row => {
-          var dateSplit = row.date.split(".").map(x => Number(x)); // format: 01.01.24
-          var timeSplit = row.time.split(":").map(x => Number(x)); // format: 00:00
+        url.searchParams.append('mittelwert', '1');
 
-          var date = new Date(Utils.convertTwoDigitYearToFourDigitWithCurrentYear(dateSplit[2]), dateSplit[1] - 1, dateSplit[0], timeSplit[0], timeSplit[1]);
-          var value = parseFloat(row.value) || row.value;
-
-          output.push({ timestamp: date, 'pm10': value });
+        var sub = new Observable<RawMeasurements>(o => {
+          this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).subscribe(ab => {
+            o.next(this.parseXlsArrayBuffer(ab, c));
+          })
         });
 
-        obs.next(output); 
+        subs.push(sub);
+      });
+
+      zip(subs).subscribe(r => {
+        var data: DataPoint[] = Object.keys(r[0].measurements).map(x => <DataPoint>{ timestamp: new Date(Number(x)) });
+
+        r.forEach(x => {
+          Object.entries(x.measurements).forEach((m) => {
+            var dp = data.find(dp => dp.timestamp.getTime() == Number(m[0]));
+            if (dp) dp[x.component.key] = m[1];
+          });
+        });
+
+        this.dataLoaded.emit(data)
+        obs.next(data);
       });
     });
   }
 
   getAvailableStations(): Observable<Station[]> {
     return new Observable<Station[]>(obs => {
-      const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php';
 
-      this.httpClient.get(url, { responseType: 'text' }).subscribe(r => {
+      this.httpClient.get(this.SCRAPEURL, { responseType: 'text' }).subscribe(r => {
         obs.next(this.parseStations(r));
       });
     });
@@ -62,7 +86,7 @@ export class DataproviderService {
         return;
       }
 
-      const url = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?' + this.STATION + "=" + station.id;
+      const url = this.SCRAPEURL + this.STATION + "=" + station.id;
 
       return this.httpClient.get(url, { responseType: 'text' }).subscribe(r => {
         this.parseComponentsForSelectedStation(r, station);
@@ -98,6 +122,30 @@ export class DataproviderService {
     }
     station.availableComponents = Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
                                     .filter((option: HTMLOptionElement) => option.value)
-                                    .map((option: HTMLOptionElement) => <StationComponent>{ id: Number(option.value), name: option.textContent || '' });
+                                    .map((option: HTMLOptionElement) => <StationComponent>{ 
+                                      id: Number(option.value), 
+                                      key: option.textContent?.match(/(?<=\().+?(?=\))/)?.[0]?.toLowerCase().replaceAll(' ', ''), 
+                                      name: option.textContent || ''
+                                    });
+  }
+
+  private parseXlsArrayBuffer(ab: ArrayBuffer, component: StationComponent) {
+    var wb = xlsx.read(ab);
+
+    var raw = <RawXlsData[]>xlsx.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: ['date', 'time', 'value']}).slice(3); // first 3 rows contain no data
+
+    var output: RawMeasurements = { component: component, measurements: {} };
+
+    raw.forEach(row => {
+      var dateSplit = row.date.split(".").map(x => Number(x)); // format: 01.01.24
+      var timeSplit = row.time.split(":").map(x => Number(x)); // format: 00:00
+
+      var date = new Date(Utils.convertTwoDigitYearToFourDigitWithCurrentYear(dateSplit[2]), dateSplit[1] - 1, dateSplit[0], timeSplit[0], timeSplit[1]);
+      var value = parseFloat(row.value);
+
+      output.measurements[date.getTime()] = value;
+    });
+
+    return output;
   }
 }

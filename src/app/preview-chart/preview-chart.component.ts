@@ -16,7 +16,7 @@ export class PreviewChartComponent implements OnInit {
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
-    this.dataProvider.getDemoDataHTML().subscribe(r => {
+    this.dataProvider.dataLoaded.subscribe(r => {
       this.generateChartData(r);
     });
   }
