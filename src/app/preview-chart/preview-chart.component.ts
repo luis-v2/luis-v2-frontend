@@ -11,31 +11,31 @@ import { DataPoint } from '../../interfaces/dataPoint.interface';
   styleUrl: './preview-chart.component.scss'
 })
 export class PreviewChartComponent implements OnInit {
-  data: DataPoint[] = [];
+  chartData: any;
 
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
     this.dataProvider.getDemoDataHTML().subscribe(r => {
-      this.data = r;
+      this.generateChartData(r);
     });
   }
 
-  generateChartData() {
+  generateChartData(data: DataPoint[]) {
     var d = {
-      labels: this.data.map(x => x.timestamp.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})),
+      labels: data.map(x => x.timestamp.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})),
       datasets: <any>[]
     };
 
-    Object.keys(this.data?.[0] ?? {}).slice(1).forEach(key => {
+    Object.keys(data?.[0] ?? {}).slice(1).forEach(key => {
       d.datasets.push({
         label: key,
-        data: this.data.map(x => x[key]),
+        data: data.map(x => x[key]),
         fill: false
       });
     });
 
-    return d;
+    this.chartData = d;
   }
 
 }
