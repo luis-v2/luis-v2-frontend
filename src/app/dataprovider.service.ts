@@ -4,6 +4,9 @@ import { Observable } from 'rxjs';
 import * as xlsx from 'xlsx';
 import { Station } from '../interfaces/station.interface';
 import { StationComponent } from '../interfaces/station-component.interface';
+import { Utils } from './utils';
+import { RawXlsData } from '../interfaces/rawXlsData.interface';
+import { DataPoint } from '../interfaces/dataPoint.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +19,27 @@ export class DataproviderService {
   KOMPONENTE:string = 'komponente1';
 
   getDemoDataHTML() {
-    return new Observable(obs => {
-      const url = "https://corsproxy.io/?https://www.umwelt.steiermark.at/luft2/export.php?station1=164&station2=&komponente1=4&station3=&station4=&komponente2=&von_tag=1&von_monat=10&von_jahr=2024&mittelwert=1&bis_tag=4&bis_monat=10&bis_jahr=2024";
+    return new Observable<DataPoint[]>(obs => {
+      const url = "https://corsproxy.io/?https://app.luis.steiermark.at/luft2/export.php?station1=178&station2=&komponente1=125&station3=&station4=&komponente2=&von_tag=20&von_monat=10&von_jahr=2024&mittelwert=1&bis_tag=23&bis_monat=10&bis_jahr=2024";
 
       this.httpClient.get(url, { responseType: 'arraybuffer'}).subscribe(r => {
         var wb = xlsx.read(r);
-        obs.next(xlsx.utils.sheet_to_html(wb.Sheets[wb.SheetNames[0]]));
+
+        var raw = <RawXlsData[]>xlsx.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: ['date', 'time', 'value']}).slice(3); // first 3 rows contain no data
+
+        var output: DataPoint[] = [];
+
+        raw.forEach(row => {
+          var dateSplit = row.date.split(".").map(x => Number(x)); // format: 01.01.24
+          var timeSplit = row.time.split(":").map(x => Number(x)); // format: 00:00
+
+          var date = new Date(Utils.convertTwoDigitYearToFourDigitWithCurrentYear(dateSplit[2]), dateSplit[1] - 1, dateSplit[0], timeSplit[0], timeSplit[1]);
+          var value = parseFloat(row.value) || row.value;
+
+          output.push({ timestamp: date, 'pm10': value });
+        });
+
+        obs.next(output); 
       });
     });
   }
