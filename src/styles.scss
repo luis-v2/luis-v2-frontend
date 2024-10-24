@@ -35,6 +35,7 @@ luis-root {
         display: flex;
         gap: 1rem;
         height: calc(50% - 1rem);
+        width: 100%;
 
         > .col {
             &.full {
