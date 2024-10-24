@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Observable, zip } from 'rxjs';
+import { Observable, retry, zip } from 'rxjs';
 import * as xlsx from 'xlsx';
 import { Station } from '../interfaces/station.interface';
 import { StationComponent } from '../interfaces/station-component.interface';
@@ -45,26 +45,40 @@ export class DataproviderService {
         url.searchParams.append('mittelwert', '1');
 
         var sub = new Observable<RawMeasurements>(o => {
-          this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).subscribe(ab => {
-            o.next(this.parseXlsArrayBuffer(ab, c));
+          this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).pipe(retry(3)).subscribe({
+            next: ab => {
+              o.next(this.parseXlsArrayBuffer(ab, c));
+            },
+            error: e => {
+              o.next(undefined);
+            }
           })
         });
 
         subs.push(sub);
       });
 
-      zip(subs).subscribe(r => {
-        var data: DataPoint[] = Object.keys(r[0].measurements).map(x => <DataPoint>{ timestamp: new Date(Number(x)) });
-
-        r.forEach(x => {
-          Object.entries(x.measurements).forEach((m) => {
-            var dp = data.find(dp => dp.timestamp.getTime() == Number(m[0]));
-            if (dp) dp[x.component.key] = m[1];
+      zip(subs).subscribe({
+        next: r => {
+          // get all possible timestamps from inputs
+          var timestamps = [...new Set(r.map(x => Object.keys(x?.measurements ?? {})).flat(1))];
+  
+          // create datapoints for each timestamp
+          var data: DataPoint[] = timestamps.map(x => <DataPoint>{ timestamp: new Date(Number(x)) });
+  
+          r.forEach(x => {
+            Object.entries(x?.measurements ?? {}).forEach((m) => {
+              var dp = data.find(dp => dp.timestamp.getTime() == Number(m[0]));
+              if (dp) dp[x.component.key] = m[1];
+            });
           });
-        });
-
-        this.dataLoaded.emit(data)
-        obs.next(data);
+  
+          this.dataLoaded.emit(data)
+          obs.next(data);
+        },
+        error: e => {
+          console.log(e);
+        }
       });
     });
   }
