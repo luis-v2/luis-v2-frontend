@@ -15,7 +15,9 @@
     <p-calendar 
         [(ngModel)]="dateRange" 
         selectionMode="range" 
-        [readonlyInput]="true" />
+        dateFormat="dd.mm.yy"
+        [maxDate]="today"
+        [readonlyInput]="false" />
 
     <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents || selectedComponents.length == 0 || !dateRange || dateRange.length < 2"/>
 </div>

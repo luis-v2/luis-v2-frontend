@@ -20,10 +20,13 @@ export class SelectionComponent implements OnInit {
   selectedStation?: Station;
   selectedComponents?: StationComponent[];
   dateRange?: Date[];
+  today?: Date;
 
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
+    this.today = new Date();
+
     this.dataProvider.getAvailableStations().subscribe(r => {
       this.stations = r;
     });
@@ -41,5 +44,4 @@ export class SelectionComponent implements OnInit {
   gatherData() {
     this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!).subscribe();
   }
-
 }

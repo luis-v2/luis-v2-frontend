@@ -6,6 +6,7 @@ import { TopbarComponent } from './topbar/topbar.component';
 import { SelectionComponent } from "./selection/selection.component";
 import { PreviewTableComponent } from "./preview-table/preview-table.component";
 import { PreviewChartComponent } from "./preview-chart/preview-chart.component";
+import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
   selector: 'luis-root',
@@ -20,8 +21,14 @@ export class AppComponent implements OnInit {
   stations: Map<string,string> = new Map();
   components: Map<string, string> = new Map();
 
-  constructor(private dataProvider: DataproviderService) {}
+  constructor(private primeNgConfig: PrimeNGConfig) {}
 
   ngOnInit(): void {
+    this.primeNgConfig.setTranslation({
+      firstDayOfWeek: 1,
+      dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+      monthNames: ['Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+      monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
+    });
   }
 }
