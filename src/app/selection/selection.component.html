@@ -25,5 +25,5 @@
       optionLabel="name"
       placeholder="Mittelwert auswählen ..." />
 
-    <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents || selectedComponents.length == 0 || !dateRange || dateRange.length < 2 || !selectedAverage"/>
+    <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents || selectedComponents.length == 0 || !dateRange || dateRange.length < 1 || !selectedAverage"/>
 </div>

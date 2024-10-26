@@ -40,9 +40,9 @@ export class DataproviderService {
         url.searchParams.append('von_monat', (range[0].getMonth() + 1).toString());
         url.searchParams.append('von_jahr', range[0].getFullYear().toString());
 
-        url.searchParams.append('bis_tag', range[1].getDate().toString());
-        url.searchParams.append('bis_monat', (range[1].getMonth() + 1).toString());
-        url.searchParams.append('bis_jahr', range[1].getFullYear().toString());
+        url.searchParams.append('bis_tag', range[1] != null ? range[1].getDate().toString() : range[0].getDate().toString());
+        url.searchParams.append('bis_monat', range[1] != null ? (range[1].getMonth() + 1).toString() : (range[0].getMonth() + 1).toString());
+        url.searchParams.append('bis_jahr', range[1] != null ? range[1].getFullYear().toString() : range[0].getFullYear().toString());
 
         url.searchParams.append(this.MITTELWERT, average.id.toString());
 
