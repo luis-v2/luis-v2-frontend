@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { StationComponent } from '../../interfaces/station-component.interface';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
+import { Average} from '../../interfaces/average.interface';
 
 @Component({
   selector: 'luis-selection',
@@ -21,6 +22,8 @@ export class SelectionComponent implements OnInit {
   selectedComponents?: StationComponent[];
   dateRange?: Date[];
   today?: Date;
+  averageOptions?: Average[];
+  selectedAverage?: Average;
 
   constructor(private dataProvider: DataproviderService) {}
 
@@ -29,6 +32,14 @@ export class SelectionComponent implements OnInit {
 
     this.dataProvider.getAvailableStations().subscribe(r => {
       this.stations = r;
+    });
+
+    // can be loaded at the start, since not depending on selected Station.
+    this.dataProvider.getAvailableAverages().subscribe(r => {
+      this.averageOptions = r;
+
+      // set default average to first entry, because original luis has same handling
+      this.selectedAverage = r[0];
     });
   }
 
@@ -42,6 +53,6 @@ export class SelectionComponent implements OnInit {
   }
 
   gatherData() {
-    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!).subscribe();
+    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!).subscribe();
   }
 }

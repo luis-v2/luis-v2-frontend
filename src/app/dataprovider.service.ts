@@ -8,6 +8,7 @@ import { Utils } from './utils';
 import { RawXlsData } from '../interfaces/rawXlsData.interface';
 import { DataPoint } from '../interfaces/dataPoint.interface';
 import { RawMeasurements } from '../interfaces/rawMeasurements.interface';
+import { Average} from '../interfaces/average.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +22,12 @@ export class DataproviderService {
 
   STATION:string = 'station1';
   KOMPONENTE:string = 'komponente1';
+  MITTELWERT:string = 'mittelwert';
   TEMPURL: string = 'https://temp.temp/'; // URL Builder has problems building the corsproxy url so we use this in the meantime and replace it later
   EXPORTURL: string = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/export.php';
   SCRAPEURL: string = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?';
 
-  getDataPoints(station: Station, components: StationComponent[], range: Date[]) {
+  getDataPoints(station: Station, components: StationComponent[], range: Date[], average: Average) {
     return new Observable<DataPoint[]>(obs => {
       var subs: Observable<RawMeasurements>[] = [];
 
@@ -42,7 +44,7 @@ export class DataproviderService {
         url.searchParams.append('bis_monat', (range[1].getMonth() + 1).toString());
         url.searchParams.append('bis_jahr', range[1].getFullYear().toString());
 
-        url.searchParams.append('mittelwert', '1');
+        url.searchParams.append(this.MITTELWERT, average.id.toString());
 
         var sub = new Observable<RawMeasurements>(o => {
           this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).pipe(retry(3)).subscribe({
@@ -62,17 +64,17 @@ export class DataproviderService {
         next: r => {
           // get all possible timestamps from inputs
           var timestamps = [...new Set(r.map(x => Object.keys(x?.measurements ?? {})).flat(1))];
-  
+
           // create datapoints for each timestamp
           var data: DataPoint[] = timestamps.map(x => <DataPoint>{ timestamp: new Date(Number(x)) });
-  
+
           r.forEach(x => {
             Object.entries(x?.measurements ?? {}).forEach((m) => {
               var dp = data.find(dp => dp.timestamp.getTime() == Number(m[0]));
               if (dp) dp[x.component.key] = m[1];
             });
           });
-  
+
           this.dataLoaded.emit(data)
           obs.next(data);
         },
@@ -136,9 +138,9 @@ export class DataproviderService {
     }
     station.availableComponents = Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
                                     .filter((option: HTMLOptionElement) => option.value)
-                                    .map((option: HTMLOptionElement) => <StationComponent>{ 
-                                      id: Number(option.value), 
-                                      key: option.textContent?.match(/(?<=\().+?(?=\))/)?.[0]?.toLowerCase().replaceAll(' ', ''), 
+                                    .map((option: HTMLOptionElement) => <StationComponent>{
+                                      id: Number(option.value),
+                                      key: option.textContent?.match(/(?<=\().+?(?=\))/)?.[0]?.toLowerCase().replaceAll(' ', ''),
                                       name: option.textContent || ''
                                     });
   }
@@ -161,5 +163,30 @@ export class DataproviderService {
     });
 
     return output;
+  }
+
+  getAvailableAverages(): Observable<Station[]> {
+    return new Observable<Station[]>(obs => {
+
+      this.httpClient.get(this.SCRAPEURL, { responseType: 'text' }).subscribe(r => {
+        obs.next(this.parseAverages(r));
+      });
+    });
+  }
+
+  private parseAverages(html: string): Average[] {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const selectElement = doc.querySelector('select[name="mittelwert"]');
+
+    // null check
+    if (!selectElement) {
+      return [];
+    }
+
+    return Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
+      .filter((option: HTMLOptionElement) => option.value)
+      .map((option: HTMLOptionElement) => <Average>{ id: Number(option.value), name: option.textContent || ''});
   }
 }

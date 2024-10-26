@@ -1,23 +1,29 @@
 <div class="card">
-    <p-dropdown 
-        [options]="stations" 
-        [(ngModel)]="selectedStation" 
-        optionLabel="name" 
+    <p-dropdown
+        [options]="stations"
+        [(ngModel)]="selectedStation"
+        optionLabel="name"
         placeholder="Station auswählen ..."
         (onChange)="onStationSelect($event)"/>
-    
-    <p-multiSelect 
-        [options]="selectedStation?.availableComponents" 
-        [(ngModel)]="selectedComponents" 
-        optionLabel="name" 
+
+    <p-multiSelect
+        [options]="selectedStation?.availableComponents"
+        [(ngModel)]="selectedComponents"
+        optionLabel="name"
         placeholder="Komponenten auswählen ..." />
 
-    <p-calendar 
-        [(ngModel)]="dateRange" 
-        selectionMode="range" 
+    <p-calendar
+        [(ngModel)]="dateRange"
+        selectionMode="range"
         dateFormat="dd.mm.yy"
         [maxDate]="today"
         [readonlyInput]="false" />
 
-    <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents || selectedComponents.length == 0 || !dateRange || dateRange.length < 2"/>
+    <p-dropdown
+      [options]="averageOptions"
+      [(ngModel)]="selectedAverage"
+      optionLabel="name"
+      placeholder="Mittelwert auswählen ..." />
+
+    <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents || selectedComponents.length == 0 || !dateRange || dateRange.length < 2 || !selectedAverage"/>
 </div>
