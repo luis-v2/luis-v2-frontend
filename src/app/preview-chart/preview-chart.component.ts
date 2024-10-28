@@ -26,7 +26,7 @@ export class PreviewChartComponent implements OnInit {
     if (data.length-1 > 48) {
       this.generateChartData(data.filter(
         function(val, index, data) {
-          return (index % Math.floor((data.length / 48))) === 0;
+          return (index % Math.ceil((data.length / 48))) === 0;
         }
       ));
       return;
