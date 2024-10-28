@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { DropdownChangeEvent, DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { Station } from '../../interfaces/station.interface';
@@ -8,6 +8,7 @@ import { StationComponent } from '../../interfaces/station-component.interface';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { Average} from '../../interfaces/average.interface';
+import {Subject, takeUntil} from 'rxjs';
 
 @Component({
   selector: 'luis-selection',
@@ -16,7 +17,7 @@ import { Average} from '../../interfaces/average.interface';
   templateUrl: './selection.component.html',
   styleUrl: './selection.component.scss'
 })
-export class SelectionComponent implements OnInit {
+export class SelectionComponent implements OnInit, OnDestroy {
   stations?: Station[];
   selectedStation?: Station;
   selectedComponents?: StationComponent[];
@@ -25,17 +26,19 @@ export class SelectionComponent implements OnInit {
   averageOptions?: Average[];
   selectedAverage?: Average;
 
+  private unsubscribe$ = new Subject<void>();
+
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
     this.today = new Date();
 
-    this.dataProvider.getAvailableStations().subscribe(r => {
+    this.dataProvider.getAvailableStations().pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.stations = r;
     });
 
     // can be loaded at the start, since not depending on selected Station.
-    this.dataProvider.getAvailableAverages().subscribe(r => {
+    this.dataProvider.getAvailableAverages().pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.averageOptions = r;
 
       // set default average to first entry, because original luis has same handling
@@ -47,12 +50,17 @@ export class SelectionComponent implements OnInit {
     this.selectedComponents = undefined;
     var station = e.value as Station;
 
-    this.dataProvider.getAvailableComponents(station).subscribe(() => {
+    this.dataProvider.getAvailableComponents(station).pipe(takeUntil(this.unsubscribe$)).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
       // stop loading ?
     });
   }
 
   gatherData() {
-    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!).subscribe();
+    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!).pipe(takeUntil(this.unsubscribe$)).subscribe();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }

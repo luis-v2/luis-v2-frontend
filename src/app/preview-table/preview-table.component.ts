@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { DataproviderService } from '../dataprovider.service';
 import { TableModule } from 'primeng/table';
 import { DataPoint } from '../../interfaces/dataPoint.interface';
 import { DatePipe, NgFor } from '@angular/common';
 import { TableColumn } from '../../interfaces/tableColumn.interface';
 import { DynamicPipe } from '../dynamic.pipe';
+import { Subject, takeUntil } from 'rxjs';
+
 
 @Component({
   selector: 'luis-preview-table',
@@ -14,19 +16,26 @@ import { DynamicPipe } from '../dynamic.pipe';
   templateUrl: './preview-table.component.html',
   styleUrl: './preview-table.component.scss'
 })
-export class PreviewTableComponent implements OnInit {
+export class PreviewTableComponent implements OnInit, OnDestroy {
   data: DataPoint[] = [];
+
+  private unsubscribe$ = new Subject<void>();
 
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
-    this.dataProvider.dataLoaded.subscribe(r => {
+    this.dataProvider.dataLoaded.pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.data = r;
     });
   }
 
   getColumns() {
     return Object.keys(this.data?.[0] ?? {}).map((x,i) => <TableColumn>{ field: x, header: x, pipe: i == 0 ? { type: DatePipe, args: 'dd.MM.yyyy HH:mm' } : undefined });
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
 }

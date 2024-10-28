@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { DataproviderService } from '../dataprovider.service';
 import { DataPoint } from '../../interfaces/dataPoint.interface';
+import { Subject, takeUntil } from 'rxjs';
+
 
 @Component({
   selector: 'luis-preview-chart',
@@ -10,13 +12,15 @@ import { DataPoint } from '../../interfaces/dataPoint.interface';
   templateUrl: './preview-chart.component.html',
   styleUrl: './preview-chart.component.scss'
 })
-export class PreviewChartComponent implements OnInit {
+export class PreviewChartComponent implements OnInit, OnDestroy {
   chartData: any;
+
+  private unsubscribe$ = new Subject<void>();
 
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
-    this.dataProvider.dataLoaded.subscribe(r => {
+    this.dataProvider.dataLoaded.pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.generateChartData(r);
     });
   }
@@ -46,6 +50,11 @@ export class PreviewChartComponent implements OnInit {
     });
 
     this.chartData = d;
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
 }

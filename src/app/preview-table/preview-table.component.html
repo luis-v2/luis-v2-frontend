@@ -1,5 +1,11 @@
 <div class="card">
-    <p-table [value]="data" [columns]="getColumns()" [tableStyle]="{'max-height': '100%'}" styleClass="p-datatable-sm" [scrollable]="true" [scrollHeight]="'flex'">
+    <p-table [value]="data"
+             [columns]="getColumns()"
+             [tableStyle]="{'max-height': '100%'}"
+             styleClass="p-datatable-sm"
+             [scrollable]="true"
+             [scrollHeight]="'flex'"
+             [virtualScroll]="true">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns">
