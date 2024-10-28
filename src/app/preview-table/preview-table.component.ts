@@ -26,7 +26,7 @@ export class PreviewTableComponent implements OnInit {
   }
 
   getColumns() {
-    return Object.keys(this.data?.[0] ?? {}).map((x,i) => <TableColumn>{ field: x, header: x, pipe: i == 0 ? { type: DatePipe, args: 'dd.MM.yyyy hh:mm' } : undefined });
+    return Object.keys(this.data?.[0] ?? {}).map((x,i) => <TableColumn>{ field: x, header: x, pipe: i == 0 ? { type: DatePipe, args: 'dd.MM.yyyy HH:mm' } : undefined });
   }
 
 }
