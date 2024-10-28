@@ -22,6 +22,16 @@ export class PreviewChartComponent implements OnInit {
   }
 
   generateChartData(data: DataPoint[]) {
+
+    if (data.length-1 > 48) {
+      this.generateChartData(data.filter(
+        function(val, index, data) {
+          return (index % Math.floor((data.length / 48))) === 0;
+        }
+      ));
+      return;
+    }
+
     var d = {
       labels: data.map(x => x.timestamp.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})),
       datasets: <any>[]
