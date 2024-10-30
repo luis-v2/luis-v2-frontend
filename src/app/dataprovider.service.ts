@@ -31,33 +31,37 @@ export class DataproviderService {
     return new Observable<DataPoint[]>(obs => {
       var subs: Observable<RawMeasurements>[] = [];
 
-      components.forEach(c => {
-        var url = new URL(this.TEMPURL);
-        url.searchParams.append(this.STATION, station.id.toString());
-        url.searchParams.append(this.KOMPONENTE, c.id.toString());
+      var dateBlocks = Utils.getDateBlocks(range[0], range[1] ?? range[0], 60);
 
-        url.searchParams.append('von_tag', range[0].getDate().toString());
-        url.searchParams.append('von_monat', (range[0].getMonth() + 1).toString());
-        url.searchParams.append('von_jahr', range[0].getFullYear().toString());
-
-        url.searchParams.append('bis_tag', range[1] != null ? range[1].getDate().toString() : range[0].getDate().toString());
-        url.searchParams.append('bis_monat', range[1] != null ? (range[1].getMonth() + 1).toString() : (range[0].getMonth() + 1).toString());
-        url.searchParams.append('bis_jahr', range[1] != null ? range[1].getFullYear().toString() : range[0].getFullYear().toString());
-
-        url.searchParams.append(this.MITTELWERT, average.id.toString());
-
-        var sub = new Observable<RawMeasurements>(o => {
-          this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).pipe(retry(3)).subscribe({
-            next: ab => {
-              o.next(this.parseXlsArrayBuffer(ab, c));
-            },
-            error: e => {
-              o.next(undefined);
-            }
-          })
+      dateBlocks.forEach(d => {
+        components.forEach(c => {
+          var url = new URL(this.TEMPURL);
+          url.searchParams.append(this.STATION, station.id.toString());
+          url.searchParams.append(this.KOMPONENTE, c.id.toString());
+  
+          url.searchParams.append('von_tag', d.start.getDate().toString());
+          url.searchParams.append('von_monat', (d.start.getMonth() + 1).toString());
+          url.searchParams.append('von_jahr', d.start.getFullYear().toString());
+  
+          url.searchParams.append('bis_tag', d.end.getDate().toString());
+          url.searchParams.append('bis_monat', (d.end.getMonth() + 1).toString());
+          url.searchParams.append('bis_jahr', d.end.getFullYear().toString());
+  
+          url.searchParams.append(this.MITTELWERT, average.id.toString());
+  
+          var sub = new Observable<RawMeasurements>(o => {
+            this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).pipe(retry(3)).subscribe({
+              next: ab => {
+                o.next(this.parseXlsArrayBuffer(ab, c));
+              },
+              error: e => {
+                o.next(undefined);
+              }
+            })
+          });
+  
+          subs.push(sub);
         });
-
-        subs.push(sub);
       });
 
       zip(subs).subscribe({
@@ -68,14 +72,21 @@ export class DataproviderService {
           // create datapoints for each timestamp
           var data: DataPoint[] = timestamps.map(x => <DataPoint>{ timestamp: new Date(Number(x)) });
 
+          // create timestamp index
+          const timestampIndex = data.reduce((acc, dp) => {
+            acc[dp.timestamp.getTime()] = dp;
+            return acc;
+          }, <{[i:number]: DataPoint}>{});
+
+          // merge data
           r.forEach(x => {
             Object.entries(x?.measurements ?? {}).forEach((m) => {
-              var dp = data.find(dp => dp.timestamp.getTime() == Number(m[0]));
+              var dp = timestampIndex[Number(m[0])];
               if (dp) dp[x.component.key] = m[1];
             });
           });
 
-          this.dataLoaded.emit(data)
+          this.dataLoaded.emit(data);
           obs.next(data);
         },
         error: e => {
