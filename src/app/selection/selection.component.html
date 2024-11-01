@@ -1,31 +1,55 @@
-<div class="card">
-    <p-dropdown
-        [options]="stations"
-        [(ngModel)]="selectedStation"
+<div class="card flex flex-wrap gap-3 p-fluid py-6">
+  <div class="flex-auto">
+    <p-floatLabel>
+      <p-dropdown
+          [options]="stations"
+          [(ngModel)]="selectedStation"
+          optionLabel="name"
+          placeholder="Station auswählen ..."
+          (onChange)="onStationSelect($event)"
+          inputId="stationSelect" />
+      <label for="stationSelect">Station auswählen ...</label>
+    </p-floatLabel>
+  </div>
+  <div class="flex-auto">
+    <p-floatLabel>
+      <p-multiSelect
+          [options]="selectedStation?.availableComponents"
+          [(ngModel)]="selectedComponents"
+          optionLabel="name"
+          placeholder="Komponenten auswählen ..."
+          inputId="componentSelect" />
+      <label for="componentSelect">Komponenten auswählen ...</label>
+    </p-floatLabel>
+  </div>
+  <div class="flex-auto">
+    <p-floatLabel>
+      <p-calendar
+          [(ngModel)]="dateRange"
+          selectionMode="range"
+          dateFormat="dd.mm.yy"
+          [maxDate]="today"
+          [readonlyInput]="false"
+          [iconDisplay]="'input'"
+          [showIcon]="true"
+          inputId="dateInput"/>
+      <label for="dateInput">Zeitraum auswählen ...</label>
+    </p-floatLabel>
+  </div>
+  <div class="flex-auto">
+    <p-floatLabel>
+      <p-dropdown
+        [options]="averageOptions"
+        [(ngModel)]="selectedAverage"
         optionLabel="name"
-        placeholder="Station auswählen ..."
-        (onChange)="onStationSelect($event)"/>
+        placeholder="Mittelwert auswählen ..."
+        inputId="averageSelect"/>
 
-    <p-multiSelect
-        [options]="selectedStation?.availableComponents"
-        [(ngModel)]="selectedComponents"
-        optionLabel="name"
-        placeholder="Komponenten auswählen ..." />
-
-    <p-calendar
-        [(ngModel)]="dateRange"
-        selectionMode="range"
-        dateFormat="dd.mm.yy"
-        [maxDate]="today"
-        [readonlyInput]="false" />
-
-    <p-dropdown
-      [options]="averageOptions"
-      [(ngModel)]="selectedAverage"
-      optionLabel="name"
-      placeholder="Mittelwert auswählen ..." />
-
+    </p-floatLabel>
+  </div>
+  <div class="flex-auto">
     <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents
                                                                    || selectedComponents.length == 0 || !dateRange
                                                                    || dateRange.length < 1 || !selectedAverage"/>
+  </div>
 </div>

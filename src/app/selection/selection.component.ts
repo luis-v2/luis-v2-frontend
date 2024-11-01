@@ -9,11 +9,12 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { Average} from '../../interfaces/average.interface';
 import {Subject, takeUntil} from 'rxjs';
+import {FloatLabelModule} from 'primeng/floatlabel';
 
 @Component({
   selector: 'luis-selection',
   standalone: true,
-  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule],
+  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule, FloatLabelModule],
   templateUrl: './selection.component.html',
   styleUrl: './selection.component.scss'
 })
