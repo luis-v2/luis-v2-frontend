@@ -3,7 +3,12 @@
 <div class="grid">
   <div class="row">
     <div class="col full">
-      <luis-selection></luis-selection>
+      <div class="card flex flex-wrap gap-3 p-fluid py-6">
+        <luis-selection></luis-selection>
+        <div>
+          <p-button label="Herunterladen" (onClick)="downloadData('json')" [disabled]="!dataGathered"/>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -11,7 +16,7 @@
     <div class="col half">
       <luis-preview-table></luis-preview-table>
     </div>
-  
+
     <div class="col half">
       <luis-preview-chart></luis-preview-chart>
     </div>

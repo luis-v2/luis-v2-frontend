@@ -7,11 +7,14 @@ import { SelectionComponent } from "./selection/selection.component";
 import { PreviewTableComponent } from "./preview-table/preview-table.component";
 import { PreviewChartComponent } from "./preview-chart/preview-chart.component";
 import { PrimeNGConfig } from 'primeng/api';
+import {Button} from 'primeng/button';
+import {Subject, takeUntil} from 'rxjs';
+import {DataPoint} from '../interfaces/dataPoint.interface';
 
 @Component({
   selector: 'luis-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, TopbarComponent, SelectionComponent, PreviewTableComponent, PreviewChartComponent],
+  imports: [RouterOutlet, CommonModule, TopbarComponent, SelectionComponent, PreviewTableComponent, PreviewChartComponent, Button],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -20,8 +23,11 @@ export class AppComponent implements OnInit {
   title = 'luis-v2';
   stations: Map<string,string> = new Map();
   components: Map<string, string> = new Map();
+  dataGathered?: DataPoint[];
 
-  constructor(private primeNgConfig: PrimeNGConfig) {}
+  private unsubscribe$ = new Subject<void>();
+
+  constructor(private primeNgConfig: PrimeNGConfig,private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
     this.primeNgConfig.setTranslation({
@@ -30,5 +36,31 @@ export class AppComponent implements OnInit {
       monthNames: ['Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
       monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
     });
+
+    this.dataProvider.dataLoaded.pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
+      this.dataGathered = r;
+    });
+  }
+
+  downloadData(fileType:String):void{
+    if(this.dataGathered){
+      let blob = null;
+      switch (fileType) {
+        default:
+        case 'json':
+          let jsonString = JSON.stringify(this.dataGathered);
+          blob = new Blob([jsonString], {type: 'application/json'});
+      }
+      this.downloadFile(blob, fileType);
+    }
+  }
+
+  downloadFile(file:Blob, fileType:String){
+    let url = window.URL.createObjectURL(file);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'download.'+fileType;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }
