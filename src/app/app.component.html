@@ -5,8 +5,19 @@
     <div class="col full">
       <div class="card flex flex-wrap gap-3 p-fluid py-6">
         <luis-selection></luis-selection>
-        <div>
-          <p-button label="Herunterladen" (onClick)="downloadData('json')" [disabled]="!dataGathered"/>
+        <div class="flex gap-3">
+          <div class="flex-auto">
+            <p-floatLabel>
+              <p-dropdown
+                [options]="fileTypes"
+                [(ngModel)]="selectedFiletype"
+                [disabled]="!dataGathered"
+                optionLabel="name"
+                placeholder="Dateityp auswählen ..."
+                inputId="filetypeSelect" />
+            </p-floatLabel>
+          </div>
+          <p-button label="Herunterladen" (onClick)="downloadData(selectedFiletype?.code)" [disabled]="!dataGathered"/>
         </div>
       </div>
     </div>
