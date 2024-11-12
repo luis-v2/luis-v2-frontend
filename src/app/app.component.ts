@@ -13,12 +13,7 @@ import {DataPoint} from '../interfaces/dataPoint.interface';
 import {DropdownModule} from 'primeng/dropdown';
 import {FloatLabelModule} from 'primeng/floatlabel';
 import {FormsModule} from '@angular/forms';
-
-
-interface Filetype {
-  name: string;
-  code: string;
-}
+import {FileType} from '../interfaces/file-type';
 
 @Component({
   selector: 'luis-root',
@@ -33,8 +28,8 @@ export class AppComponent implements OnInit {
   stations: Map<string,string> = new Map();
   components: Map<string, string> = new Map();
   dataGathered?: DataPoint[];
-  fileTypes?: Filetype[];
-  selectedFiletype?: Filetype;
+  fileTypes?: FileType[];
+  selectedFiletype?: FileType;
 
   private unsubscribe$ = new Subject<void>();
 
@@ -92,6 +87,7 @@ export class AppComponent implements OnInit {
 
   createFileName(dataPoints:DataPoint[]):string {
     let keysArray = Object.keys(dataPoints[0]);
+    keysArray.shift();
     let components = keysArray.join("_");
     let firstElement = dataPoints.shift();
     let lastElement = dataPoints.pop();
