@@ -89,8 +89,8 @@ export class AppComponent implements OnInit {
     let keysArray = Object.keys(dataPoints[0]);
     keysArray.shift();
     let components = keysArray.join("_");
-    let firstElement = dataPoints.shift();
-    let lastElement = dataPoints.pop();
+    let firstElement = dataPoints[0];
+    let lastElement = dataPoints[dataPoints.length - 1];
 
     return firstElement?.timestamp.toLocaleDateString("en-GB") + "-" + lastElement?.timestamp.toLocaleDateString("en-GB") + "-" + components;
   }
