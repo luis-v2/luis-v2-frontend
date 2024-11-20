@@ -33,29 +33,35 @@ luis-root {
 }
 
 .card {
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    height: 100%;
+
+    &.preview {
+      height: 100%;
+    }
 }
 
 .grid {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: column;
     padding: 1rem;
     height: calc(100% - var(--topbar-height));
-    gap: 1rem;
 
     > .row {
         display: flex;
-        gap: 1rem;
-        height: calc(50% - 1rem);
         width: 100%;
+
+        &:first-child {
+          height: -moz-available;
+          height: -webkit-fill-available;
+        }
 
         > .col {
             &.full {
                 width: 100%;
+                height: -moz-available;
+                height: -webkit-fill-available;
             }
 
             &.half {

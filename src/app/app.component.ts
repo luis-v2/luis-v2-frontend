@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { DataproviderService } from './dataprovider.service';
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
       firstDayOfWeek: 1,
       dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
       monthNames: ['Jänner', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-      monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']
+      monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
     });
     this.fileTypes = [
       { name: 'JSON', code: 'json'},
@@ -51,6 +51,16 @@ export class AppComponent implements OnInit {
     this.dataProvider.dataLoaded.pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.dataGathered = r;
     });
+  }
+
+  @HostListener("window:resize", ['$event'])
+  onWindowResize(event: any) {
+    let row = document.querySelectorAll('.grid > .row');
+    let selection = row[0] as HTMLElement;
+    let previews = row[1] as HTMLElement;
+
+    previews.style.setProperty('height', `calc(100% - ${selection.offsetHeight}px)`);
+    console.log(row, selection, previews, previews.style.height)
   }
 
   downloadData(fileType: string | undefined):void{
