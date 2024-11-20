@@ -9,12 +9,13 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { Average} from '../../interfaces/average.interface';
 import {Subject, takeUntil} from 'rxjs';
+import { DialogModule } from 'primeng/dialog';
 import {FloatLabelModule} from 'primeng/floatlabel';
 
 @Component({
   selector: 'luis-selection',
   standalone: true,
-  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule, FloatLabelModule],
+  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule, FloatLabelModule, DialogModule],
   templateUrl: './selection.component.html',
   styleUrl: './selection.component.scss'
 })
@@ -26,6 +27,7 @@ export class SelectionComponent implements OnInit, OnDestroy {
   today?: Date;
   averageOptions?: Average[];
   selectedAverage?: Average;
+  loading: boolean = false;
 
   private unsubscribe$ = new Subject<void>();
 
@@ -51,13 +53,14 @@ export class SelectionComponent implements OnInit, OnDestroy {
     this.selectedComponents = undefined;
     var station = e.value as Station;
 
-    this.dataProvider.getAvailableComponents(station).pipe(takeUntil(this.unsubscribe$)).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
-      // stop loading ?
-    });
+    this.dataProvider.getAvailableComponents(station).pipe(takeUntil(this.unsubscribe$)).pipe(takeUntil(this.unsubscribe$)).subscribe();
   }
 
   gatherData() {
-    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!).pipe(takeUntil(this.unsubscribe$)).subscribe();
+    this.loading = true;
+    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!).pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
+      this.loading = false;
+    });
   }
 
   ngOnDestroy() {

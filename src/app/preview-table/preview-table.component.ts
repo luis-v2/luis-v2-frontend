@@ -18,6 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class PreviewTableComponent implements OnInit, OnDestroy {
   data: DataPoint[] = [];
+  columns: TableColumn[] = [];
 
   private unsubscribe$ = new Subject<void>();
 
@@ -26,6 +27,7 @@ export class PreviewTableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.dataProvider.dataLoaded.pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.data = r;
+      this.columns = this.getColumns();
     });
   }
 

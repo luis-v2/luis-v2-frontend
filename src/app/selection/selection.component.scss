@@ -5,3 +5,21 @@ p-dropdown > ::ng-deep div {
 p-multiselect > ::ng-deep div {
     min-width: 400px;
 }
+
+.loading-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    
+        > span > i {
+            font-size: 3rem;
+        }
+    }
+}
