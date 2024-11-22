@@ -55,14 +55,12 @@ luis-root {
 
         &:first-child {
           height: -moz-available;
-          height: -webkit-fill-available;
         }
 
         > .col {
             &.full {
                 width: 100%;
                 height: -moz-available;
-                height: -webkit-fill-available;
             }
 
             &.half {
