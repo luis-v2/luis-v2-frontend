@@ -1,6 +1,5 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 import { DataproviderService } from './dataprovider.service';
 import { TopbarComponent } from './topbar/topbar.component';
 import { SelectionComponent } from "./selection/selection.component";
@@ -18,7 +17,7 @@ import {FileType} from '../interfaces/file-type';
 @Component({
   selector: 'luis-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, TopbarComponent, SelectionComponent, PreviewTableComponent, PreviewChartComponent, Button, DropdownModule, FloatLabelModule, FormsModule],
+  imports: [CommonModule, TopbarComponent, SelectionComponent, PreviewTableComponent, PreviewChartComponent, Button, DropdownModule, FloatLabelModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -109,7 +108,7 @@ export class AppComponent implements OnInit {
     let str = '';
     let row = '';
     for (let index in headerList) {
-      row += headerList[index] + ',';
+      row += headerList[index] + ';';
     }
     row = row.slice(0, -1);
     str += row + '\r\n';
@@ -117,7 +116,8 @@ export class AppComponent implements OnInit {
       let line = '';
       for (let index in headerList) {
         let head = headerList[index];
-        line += array[i][head] +',';
+        line += (typeof array[i][head] == 'object' ? array[i][head].toLocaleString("en-GB") : array[i][head]) + ';';
+        console.log()
       }
       str += line.slice(0, -1) + '\r\n';
     }
