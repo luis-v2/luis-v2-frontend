@@ -1,0 +1,15 @@
+.year-selection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+
+    > span {
+        font-weight: bold;
+    }
+}
+
+.card:has(> .year-selection) {
+    padding-top: 8px;
+}

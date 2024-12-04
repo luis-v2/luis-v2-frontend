@@ -1,3 +1,8 @@
 <div class="card preview">
-    <p-chart type="line" [data]="chartData" [options]="{ maintainAspectRatio: false, normalized: true, elements: { point: { radius: 0 } } }" [height]="'100%'"/>
+    <div class="year-selection">
+        <p-button icon="pi pi-chevron-left" [rounded]="true" [text]="true" (onClick)="changeYear(false)" [disabled]="(selectedYear ?? 0) <= years[0]"/>
+        <span>{{ selectedYear }}</span>
+        <p-button icon="pi pi-chevron-right" [rounded]="true" [text]="true" (onClick)="changeYear(true)" [disabled]="(selectedYear ?? 0) >= years[years.length - 1]"/>
+    </div>
+    <p-chart type="line" [data]="chartData" [options]="{ maintainAspectRatio: false, normalized: true, elements: { point: { radius: 0 } } }" [height]="'calc(100% - 40px)'"/>
 </div>

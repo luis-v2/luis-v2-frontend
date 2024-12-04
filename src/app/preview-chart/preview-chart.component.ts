@@ -3,17 +3,20 @@ import { ChartModule } from 'primeng/chart';
 import { DataproviderService } from '../dataprovider.service';
 import { DataPoint } from '../../interfaces/dataPoint.interface';
 import { Subject, takeUntil } from 'rxjs';
-
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'luis-preview-chart',
   standalone: true,
-  imports: [ChartModule],
+  imports: [ChartModule, ButtonModule],
   templateUrl: './preview-chart.component.html',
   styleUrl: './preview-chart.component.scss'
 })
 export class PreviewChartComponent implements OnInit, OnDestroy {
   chartData: any;
+  dataPoints?: DataPoint[];
+  years: number[] = [];
+  selectedYear?: number;
 
   private unsubscribe$ = new Subject<void>();
 
@@ -21,7 +24,12 @@ export class PreviewChartComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.dataProvider.dataLoaded.pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
-      this.generateChartData(r);
+      this.dataPoints = r;
+
+      this.years = Array.from(new Set(r.map(x => x.timestamp.getFullYear())));
+      this.selectedYear = this.years[0];
+
+      this.generateChartData(this.dataPoints!.filter(x => x.timestamp.getFullYear() == this.selectedYear));
     });
   }
 
@@ -50,6 +58,12 @@ export class PreviewChartComponent implements OnInit, OnDestroy {
     });
 
     this.chartData = d;
+  }
+
+  changeYear(increase: boolean) {
+    this.selectedYear = this.years.find(x => x == this.selectedYear! + (increase ? 1 : -1));
+
+    this.generateChartData(this.dataPoints!.filter(x => x.timestamp.getFullYear() == this.selectedYear));
   }
 
   ngOnDestroy(): void {
