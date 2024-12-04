@@ -27,7 +27,7 @@ export class PreviewChartComponent implements OnInit, OnDestroy {
 
   generateChartData(data: DataPoint[]) {
 
-    if (data.length-1 > 48) {
+    if (data.length - 1 > 48) {
       this.generateChartData(data.filter(
         function(val, index, data) {
           return (index % Math.ceil((data.length / 48))) === 0;
