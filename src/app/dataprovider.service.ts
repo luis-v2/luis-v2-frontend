@@ -17,7 +17,7 @@ export class DataproviderService {
   dataLoaded: EventEmitter<DataPoint[]>;
 
   constructor(private httpClient: HttpClient) {
-    this.dataLoaded = new EventEmitter<DataPoint[]>(); // übergangslösung
+    this.dataLoaded = new EventEmitter<DataPoint[]>();
   }
 
   STATION: string = 'station1';
@@ -137,7 +137,7 @@ export class DataproviderService {
 
     return Array.from(selectElement.querySelectorAll('option') as NodeListOf<HTMLOptionElement>)
     .filter((option: HTMLOptionElement) => option.value)
-    .map((option: HTMLOptionElement) => <Station>{ id: Number(option.value), name: option.textContent || ''});
+    .map((option: HTMLOptionElement) => <Station>{ id: Number(option.value), name: option.textContent?.replaceAll(';', '') || ''});
   }
 
   private parseComponentsForSelectedStation(html: string, station: Station): void {
