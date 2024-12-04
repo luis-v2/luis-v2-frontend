@@ -38,6 +38,8 @@ export class SelectionComponent implements OnInit, OnDestroy {
 
     this.dataProvider.getAvailableStations().pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.stations = r;
+
+      this.preloadDemoData();
     });
 
     // can be loaded at the start, since not depending on selected Station.
@@ -66,6 +68,22 @@ export class SelectionComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  preloadDemoData() {
+    // preselect "Graz-Don Bosco"
+    this.selectedStation = this.stations?.find(x => x.id == 164) ?? this.stations![0];
+
+    // set default date range
+    this.dateRange = [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date(new Date().setHours(0,0,0,0))];
+
+    // get components for preselected station
+    this.dataProvider.getAvailableComponents(this.selectedStation).pipe(takeUntil(this.unsubscribe$)).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
+      // select components: 125 = pm10, 8 = lute, 29 = co
+      this.selectedComponents = this.selectedStation?.availableComponents?.filter(x => [125, 8, 29].includes(x.id));
+
+      if (this.selectedComponents && this.selectedComponents.length > 0) this.gatherData();
+    });
   }
 
 }
