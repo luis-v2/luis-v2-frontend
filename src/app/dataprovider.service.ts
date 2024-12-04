@@ -20,12 +20,13 @@ export class DataproviderService {
     this.dataLoaded = new EventEmitter<DataPoint[]>(); // übergangslösung
   }
 
-  STATION:string = 'station1';
-  KOMPONENTE:string = 'komponente1';
-  MITTELWERT:string = 'mittelwert';
+  STATION: string = 'station1';
+  KOMPONENTE: string = 'komponente1';
+  MITTELWERT: string = 'mittelwert';
   TEMPURL: string = 'https://temp.temp/'; // URL Builder has problems building the corsproxy url so we use this in the meantime and replace it later
-  EXPORTURL: string = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/export.php';
-  SCRAPEURL: string = 'https://corsproxy.io/?https://app.luis.steiermark.at/luft2/suche.php?';
+  EXPORTURL: string = 'app.luis.steiermark.at/luft2/export.php';
+  CORSPROXYURL: string = 'https://cors-proxy.s1.enthaler.dev/';
+  SCRAPEURL: string = 'app.luis.steiermark.at/luft2/suche.php?';
 
   getDataPoints(station: Station, components: StationComponent[], range: Date[], average: Average) {
     return new Observable<DataPoint[]>(obs => {
@@ -50,7 +51,7 @@ export class DataproviderService {
           url.searchParams.append(this.MITTELWERT, average.id.toString());
   
           var sub = new Observable<RawMeasurements>(o => {
-            this.httpClient.get(url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).pipe(retry(3)).subscribe({
+            this.httpClient.get(this.CORSPROXYURL + url.href.replace(this.TEMPURL, this.EXPORTURL), { responseType: 'arraybuffer'}).pipe(retry(3)).subscribe({
               next: ab => {
                 o.next(this.parseXlsArrayBuffer(ab, c));
               },
@@ -99,7 +100,7 @@ export class DataproviderService {
   getAvailableStations(): Observable<Station[]> {
     return new Observable<Station[]>(obs => {
 
-      this.httpClient.get(this.SCRAPEURL, { responseType: 'text' }).subscribe(r => {
+      this.httpClient.get(this.CORSPROXYURL + this.SCRAPEURL, { responseType: 'text' }).subscribe(r => {
         obs.next(this.parseStations(r));
       });
     });
@@ -113,7 +114,7 @@ export class DataproviderService {
         return;
       }
 
-      const url = this.SCRAPEURL + this.STATION + "=" + station.id;
+      const url = this.CORSPROXYURL + this.SCRAPEURL + this.STATION + "=" + station.id;
 
       return this.httpClient.get(url, { responseType: 'text' }).subscribe(r => {
         this.parseComponentsForSelectedStation(r, station);
@@ -179,7 +180,7 @@ export class DataproviderService {
   getAvailableAverages(): Observable<Station[]> {
     return new Observable<Station[]>(obs => {
 
-      this.httpClient.get(this.SCRAPEURL, { responseType: 'text' }).subscribe(r => {
+      this.httpClient.get(this.CORSPROXYURL + this.SCRAPEURL, { responseType: 'text' }).subscribe(r => {
         obs.next(this.parseAverages(r));
       });
     });
