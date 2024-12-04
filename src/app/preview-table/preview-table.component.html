@@ -5,7 +5,8 @@
              styleClass="p-datatable-sm"
              [scrollable]="true"
              [scrollHeight]="'flex'"
-             [virtualScroll]="true">
+             [virtualScroll]="true"
+             [virtualScrollItemSize]="36">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns">
