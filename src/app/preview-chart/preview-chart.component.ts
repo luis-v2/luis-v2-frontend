@@ -35,21 +35,32 @@ export class PreviewChartComponent implements OnInit, OnDestroy {
 
   generateChartData(data: DataPoint[]) {
 
-    if (data.length - 1 > 48) {
-      this.generateChartData(data.filter(
-        function(val, index, data) {
-          return (index % Math.ceil((data.length / 48))) === 0;
-        }
-      ));
-      return;
+    const MAX_POINTS = 1095; // 3 points per day?
+    var filteredData = data;
+    if (data.length > MAX_POINTS) {
+      const startDate = data[0].timestamp;
+      const nextDay = new Date(startDate);
+
+      nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+
+      var nextIndex = data.findIndex(x => {
+        let dateOnly = new Date(x.timestamp).setHours(0, 0, 0, 0);
+        let nextDayOnly = new Date(nextDay).setHours(0, 0, 0, 0);
+        return dateOnly === nextDayOnly;
+      });
+
+      if (nextIndex > 0) {
+        filteredData =
+          data.filter((_, index) => index % Math.ceil((nextIndex / 3)) === 0);
+      }
     }
 
     var d = {
-      labels: data.map(x => x.timestamp.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})),
+      labels: filteredData.map(x => x.timestamp.toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'})),
       datasets: <any>[]
     };
 
-    Object.keys(data?.[0] ?? {}).slice(1).forEach(key => {
+    Object.keys(filteredData?.[0] ?? {}).slice(1).forEach(key => {
       d.datasets.push({
         label: key,
         data: data.map(x => x[key]),

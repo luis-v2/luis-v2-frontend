@@ -4,5 +4,5 @@
         <span>{{ selectedYear }}</span>
         <p-button icon="pi pi-chevron-right" [rounded]="true" [text]="true" (onClick)="changeYear(true)" [disabled]="(selectedYear ?? 0) >= years[years.length - 1]"/>
     </div>
-    <p-chart type="line" [data]="chartData" [options]="{ maintainAspectRatio: false, normalized: true, elements: { point: { radius: 0 } } }" [height]="'calc(100% - 40px)'"/>
+    <p-chart type="line" [data]="chartData" [options]="{ maintainAspectRatio: false, animation: false, normalized: true, spanGaps: true, elements: { point: { radius: 0 } } }" [height]="'calc(100% - 40px)'"/>
 </div>
