@@ -63,7 +63,7 @@ export class PreviewChartComponent implements OnInit, OnDestroy {
     Object.keys(filteredData?.[0] ?? {}).slice(1).forEach(key => {
       d.datasets.push({
         label: key,
-        data: data.map(x => x[key]),
+        data: filteredData.map(x => x[key]),
         fill: false
       });
     });
