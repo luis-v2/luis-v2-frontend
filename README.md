@@ -30,6 +30,6 @@ darstellt.
 
 ## Demo
 
-Aktuell kann das Tool unter folgender Url verwendet werden:
+Aktuell kann das Tool hier verwendet werden:
 [Online DEV Version](https://luis-v2.projects.enthaler.dev/)
 
