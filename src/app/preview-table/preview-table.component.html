@@ -16,7 +16,9 @@
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
-                <td *ngFor="let col of columns">
+                <td *ngFor="let col of columns"
+                    [ngClass]="{'cell-empty': isColumnEmpty(rowData[col.field])}">
+
                     {{ rowData[col.field] | dynamic: col.pipe?.type : col.pipe?.args }}
                 </td>
             </tr>

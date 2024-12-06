@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import { DataproviderService } from '../dataprovider.service';
 import { TableModule } from 'primeng/table';
 import { DataPoint } from '../../interfaces/dataPoint.interface';
-import { DatePipe, NgFor } from '@angular/common';
+import {DatePipe, NgClass, NgFor} from '@angular/common';
 import { TableColumn } from '../../interfaces/tableColumn.interface';
 import { DynamicPipe } from '../dynamic.pipe';
 import { Subject, takeUntil } from 'rxjs';
@@ -11,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'luis-preview-table',
   standalone: true,
-  imports: [TableModule, DatePipe, NgFor, DynamicPipe],
+  imports: [TableModule, DatePipe, NgFor, DynamicPipe, NgClass],
   providers: [DatePipe],
   templateUrl: './preview-table.component.html',
   styleUrl: './preview-table.component.scss'
@@ -40,4 +40,7 @@ export class PreviewTableComponent implements OnInit, OnDestroy {
     this.unsubscribe$.complete();
   }
 
+  isColumnEmpty(value: string): boolean {
+    return value === null || value === undefined || value === '';
+  }
 }
