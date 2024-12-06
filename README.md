@@ -33,3 +33,19 @@ darstellt.
 Aktuell kann das Tool hier verwendet werden:
 [Online DEV Version](https://luis-v2.projects.enthaler.dev/)
 
+
+Um die App lokal auszuführen, folgen Sie diesen Schritten:
+
+Klonen Sie das Repository:
+```
+git clone https://git-iit.fh-joanneum.at/swd23-hackathon/luis-v2.git
+```
+
+Installieren Sie die notwendigen Abhängigkeiten:
+```
+npm install
+```
+Starten Sie die Applikation:
+```
+npm run start
+```
