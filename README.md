@@ -1,3 +1,5 @@
+![Logo](https://git-iit.fh-joanneum.at/swd23-hackathon/luis-v2/-/tree/main/src/assets/logo/LuisV2Logo.png)
+
 # LUIS V2
 
 LUIS ist ein Downloadtool für Wetter und Luftverschmutzungsdaten des Umweltamts Steiermark. Die aktuelle Version des Tools ist nicht mehr aktuell und soll modernisiert und verbessert werden. Ziel des Projekts ist es, die Daten nutzerfreundlich und verarbeitet für Benutzer:innen, darunter auch Data Analysts und Statistiker:innen, zur Verfügung zu stellen. UIS V2 ist ein Downloadtool für Wetter und Luftverschmutzungsdatan des Umweltamts Steiermark. Ziel ist es, die Daten nutzerfreundlich und verarbeitet für Benutzer:innen, darunter auch Data Analysts und Statistiker:innen, zur Verfügung zu stellen.
@@ -14,7 +16,7 @@ darstellt.
 
 ## Nice To Have Funktionen
 
-- Downloadmöglichkeit in verschiedene Formate für Data Analysts (feather, parquet…)
+- Downloadmöglichkeit in verschiedene Formate für Data Analysts (feather, parquet…) 
 - Erweiterte Dateninformation (Wochentage, Inversionsberechnung…)
 - Darstellungen können interativ zwischen Komponenten switchen
 - Option um fehlende Messwerte zu imputieren
@@ -24,3 +26,10 @@ darstellt.
 - Enthaler Tobias
 - Hanner Jakob
 - Inalov Achmad
+
+
+## Demo
+
+Aktuell kann das Tool unter folgender Url verwendet werden:
+[Online DEV Version](https://luis-v2.projects.enthaler.dev/)
+
