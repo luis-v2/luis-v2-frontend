@@ -1,4 +1,4 @@
-![Logo](https://git-iit.fh-joanneum.at/swd23-hackathon/luis-v2/-/tree/main/src/assets/logo/LuisV2Logo.png)
+![Logo](https://git-iit.fh-joanneum.at/swd23-hackathon/luis-v2/-/raw/main/src/assets/logo/LuisV2Logo.png)
 
 # LUIS V2
 
