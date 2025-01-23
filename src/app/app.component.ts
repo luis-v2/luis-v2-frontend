@@ -46,7 +46,6 @@ export class AppComponent implements OnInit {
     this.fileTypes = [
       { name: 'JSON', code: 'json'},
       { name: 'CSV', code: 'csv'},
-      { name: 'PARQUET', code: 'parquet'},
     ];
     this.selectedFiletype =  { name: 'JSON', code: 'json'};
 
