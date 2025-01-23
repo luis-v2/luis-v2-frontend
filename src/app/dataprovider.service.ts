@@ -29,7 +29,7 @@ export class DataproviderService {
   CORSPROXYURL: string = 'https://cors-proxy.s1.enthaler.dev/';
   SCRAPEURL: string = 'app.luis.steiermark.at/luft2/suche.php?';
 
-  getDataPoints(station: Station, components: StationComponent[], range: Date[], average: Average) {
+  getDataPoints(station: Station, components: StationComponent[], range: Date[], average: Average, interpolate: boolean) {
     return new Observable<DataPoint[]>(obs => {
       var subs: Observable<RawMeasurements>[] = [];
 
@@ -87,6 +87,50 @@ export class DataproviderService {
               if (dp) dp[x.component.key] = m[1];
             });
           });
+
+          // interpolation
+          if (interpolate) {
+            let getFilledValue = (d: DataPoint[], i: number, k: string, increase: boolean) => {
+              i = increase ? (i + 1) : (i - 1);
+  
+              if (i < 0 || i >= data.length) return;
+  
+              // value found
+              if (data[i][k] != undefined) {
+                return { value: data[i][k], index: i};
+              }
+
+              // move one step up/down
+              return getFilledValue(d, i, k, increase);
+            }
+  
+            let keys = r.map(x => x?.component?.key)?.filter(x => !!x);
+            keys.forEach(key => { // loop through each available key
+              data.forEach((x, i) => { // loop thorugh all datapoints
+                if (x[key] == undefined) { // check if key is empty at this datapoint
+
+                  // get nearest filled datapoint in both directions
+                  let before = getFilledValue(data, i, key, false);
+                  let next = getFilledValue(data, i, key, true);
+  
+                  // if datapoint is found for both directions
+                  if (before && next) {
+                    let bi = (i - before.index);
+                    let ni = (next.index - i);
+
+                    // if distance is less than 10 datapoints
+                    if ((bi + ni) <= 10) {
+                      // calculate value
+                      x[key] = Number(((before.value + next.value) / 2).toFixed(4));
+
+                      // mark datapoint as interpolated for visualization
+                      x.interpolated?.push(key) ?? (x.interpolated = [key]);
+                    }
+                  }
+                }
+              });
+            });
+          }
 
           if (r.some(x => x == undefined)) {
             this.messageService.add({ severity: 'warn', summary: 'Warnung', detail: 'Es konnten nicht alle Datenblöcke heruntergeladen werden. Bitte überprüfen Sie die Ausgabe in der Tabelle.' });

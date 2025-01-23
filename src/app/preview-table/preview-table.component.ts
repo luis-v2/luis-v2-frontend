@@ -43,4 +43,8 @@ export class PreviewTableComponent implements OnInit, OnDestroy {
   isColumnEmpty(value: string): boolean {
     return value === null || value === undefined || value === '';
   }
+
+  isColumnInterpolated(data: DataPoint, field: string) {
+    return data.interpolated?.includes(field);
+  }
 }

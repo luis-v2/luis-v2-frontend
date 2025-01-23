@@ -51,6 +51,15 @@
 
     </p-floatLabel>
   </div>
+  <div class="flex-auto"
+        pTooltip="Interpolierte Werte werden Gelb hinterlegt in der Tabelle angezeigt. Es wird maximal bis zu einem Abstand von 10 Datenpunkten interpoliert."
+        tooltipPosition="bottom">
+    <p-checkbox
+    [(ngModel)]="interpolate"
+    [binary]="true"
+    inputId="interpolate"></p-checkbox>
+    <label for="interpolate">Daten interpolieren</label>
+  </div>
   <div class="flex-auto">
     <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents
                                                                    || selectedComponents.length == 0 || !dateRange

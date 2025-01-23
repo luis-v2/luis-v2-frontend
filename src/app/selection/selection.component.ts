@@ -11,11 +11,13 @@ import { Average} from '../../interfaces/average.interface';
 import {Subject, takeUntil} from 'rxjs';
 import { DialogModule } from 'primeng/dialog';
 import {FloatLabelModule} from 'primeng/floatlabel';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'luis-selection',
   standalone: true,
-  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule, FloatLabelModule, DialogModule],
+  imports: [DropdownModule, FormsModule, MultiSelectModule, ButtonModule, CalendarModule, FloatLabelModule, DialogModule, CheckboxModule, TooltipModule],
   templateUrl: './selection.component.html',
   styleUrl: './selection.component.scss'
 })
@@ -27,6 +29,7 @@ export class SelectionComponent implements OnInit, OnDestroy {
   today?: Date;
   averageOptions?: Average[];
   selectedAverage?: Average;
+  interpolate?: boolean = false;
   loading: boolean = false;
 
   private unsubscribe$ = new Subject<void>();
@@ -60,7 +63,7 @@ export class SelectionComponent implements OnInit, OnDestroy {
 
   gatherData() {
     this.loading = true;
-    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!).pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
+    this.dataProvider.getDataPoints(this.selectedStation!, this.selectedComponents!, this.dateRange!, this.selectedAverage!, this.interpolate!).pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.loading = false;
     });
   }
