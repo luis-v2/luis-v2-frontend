@@ -13,11 +13,12 @@ import {DropdownModule} from 'primeng/dropdown';
 import {FloatLabelModule} from 'primeng/floatlabel';
 import {FormsModule} from '@angular/forms';
 import {FileType} from '../interfaces/file-type';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'luis-root',
   standalone: true,
-  imports: [CommonModule, TopbarComponent, SelectionComponent, PreviewTableComponent, PreviewChartComponent, Button, DropdownModule, FloatLabelModule, FormsModule],
+  imports: [CommonModule, TopbarComponent, SelectionComponent, PreviewTableComponent, PreviewChartComponent, Button, DropdownModule, FloatLabelModule, FormsModule, ToastModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -59,7 +60,6 @@ export class AppComponent implements OnInit {
     let previews = row[1] as HTMLElement;
 
     previews.style.setProperty('height', `calc(100% - ${selection.offsetHeight}px)`);
-    console.log(row, selection, previews, previews.style.height)
   }
 
   downloadData(fileType: string | undefined):void{
@@ -67,7 +67,6 @@ export class AppComponent implements OnInit {
       let blob = new Blob;
       let keysArray = Object.keys(this.dataGathered[0]);
       let fileName = this.createFileName(this.dataGathered)
-      console.log(fileName);
       switch (fileType) {
         case 'csv':
           let csvData = this.convertToCSV(this.dataGathered, keysArray);
@@ -117,7 +116,6 @@ export class AppComponent implements OnInit {
       for (let index in headerList) {
         let head = headerList[index];
         line += (typeof array[i][head] == 'object' ? array[i][head].toLocaleString("en-GB") : array[i][head]) + ';';
-        console.log()
       }
       str += line.slice(0, -1) + '\r\n';
     }

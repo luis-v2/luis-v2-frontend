@@ -9,6 +9,7 @@ import { RawXlsData } from '../interfaces/rawXlsData.interface';
 import { DataPoint } from '../interfaces/dataPoint.interface';
 import { RawMeasurements } from '../interfaces/rawMeasurements.interface';
 import { Average} from '../interfaces/average.interface';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ import { Average} from '../interfaces/average.interface';
 export class DataproviderService {
   dataLoaded: EventEmitter<DataPoint[]>;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private messageService: MessageService) {
     this.dataLoaded = new EventEmitter<DataPoint[]>();
   }
 
@@ -86,6 +87,10 @@ export class DataproviderService {
               if (dp) dp[x.component.key] = m[1];
             });
           });
+
+          if (r.some(x => x == undefined)) {
+            this.messageService.add({ severity: 'warn', summary: 'Warnung', detail: 'Es konnten nicht alle Datenblöcke heruntergeladen werden. Bitte überprüfen Sie die Ausgabe in der Tabelle.' });
+          }
 
           this.dataLoaded.emit(data);
           obs.next(data);
