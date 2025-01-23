@@ -7,6 +7,8 @@
           optionLabel="name"
           placeholder="Station auswählen ..."
           (onChange)="onStationSelect($event)"
+          [filter]="true"
+          filterBy="name"
           inputId="stationSelect" />
       <label for="stationSelect">Station auswählen ...</label>
     </p-floatLabel>
