@@ -14,6 +14,7 @@ import {FloatLabelModule} from 'primeng/floatlabel';
 import {FormsModule} from '@angular/forms';
 import {FileType} from '../interfaces/file-type';
 import { ToastModule } from 'primeng/toast';
+import * as Papa from 'papaparse';
 
 @Component({
   selector: 'luis-root',
@@ -45,6 +46,7 @@ export class AppComponent implements OnInit {
     this.fileTypes = [
       { name: 'JSON', code: 'json'},
       { name: 'CSV', code: 'csv'},
+      { name: 'PARQUET', code: 'parquet'},
     ];
     this.selectedFiletype =  { name: 'JSON', code: 'json'};
 
@@ -65,11 +67,10 @@ export class AppComponent implements OnInit {
   downloadData(fileType: string | undefined):void{
     if (this.dataGathered && fileType != undefined) {
       let blob = new Blob;
-      let keysArray = Object.keys(this.dataGathered[0]);
       let fileName = this.createFileName(this.dataGathered)
       switch (fileType) {
         case 'csv':
-          let csvData = this.convertToCSV(this.dataGathered, keysArray);
+          let csvData  = Papa.unparse(this.dataGathered,{delimiter: ";"});
           blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
           break;
         default:
@@ -101,24 +102,5 @@ export class AppComponent implements OnInit {
     let lastElement = dataPoints[dataPoints.length - 1];
 
     return firstElement?.timestamp.toLocaleDateString("en-GB") + "-" + lastElement?.timestamp.toLocaleDateString("en-GB") + "-" + components;
-  }
-  convertToCSV(objArray:any, headerList:any[]) {
-    let array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
-    let str = '';
-    let row = '';
-    for (let index in headerList) {
-      row += headerList[index] + ';';
-    }
-    row = row.slice(0, -1);
-    str += row + '\r\n';
-    for (let i = 0; i < array.length; i++) {
-      let line = '';
-      for (let index in headerList) {
-        let head = headerList[index];
-        line += (typeof array[i][head] == 'object' ? array[i][head].toLocaleString("en-GB") : array[i][head]) + ';';
-      }
-      str += line.slice(0, -1) + '\r\n';
-    }
-    return str;
   }
 }
