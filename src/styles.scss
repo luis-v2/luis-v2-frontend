@@ -26,13 +26,25 @@ h1,h2,h3,h4,h5,h6 {
   font-family: 'Chau Philomene', serif;
 }
 luis-root {
-    position: fixed;
+    position: relative;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
 }
-
+luis-selection{
+  width: 100%;
+}
+p-multiselect > div{
+  min-width: 100% !important;
+}
+.p-tooltip .p-tooltip-text{
+  background: #55ab41;
+  color: #000000;
+}
+.p-tooltip.p-tooltip-bottom .p-tooltip-arrow {
+  border-bottom-color: #55ab41;
+}
 .card {
     padding: 1rem;
     border-radius: 12px;
@@ -40,32 +52,9 @@ luis-root {
 
     &.preview {
       height: 100%;
+      min-height: 400px;
     }
 }
-
-.grid {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 1rem;
-    height: calc(100% - var(--topbar-height));
-
-    > .row {
-        display: flex;
-        width: 100%;
-
-        &:first-child {
-          height: -moz-available;
-        }
-
-        > .col {
-            &.full {
-                width: 100%;
-                height: -moz-available;
-            }
-
-            &.half {
-                width: 50%;
-            }
-        }
-    }
+.d-none{
+    display: none;
 }
