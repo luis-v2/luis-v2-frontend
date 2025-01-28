@@ -58,3 +58,56 @@ p-multiselect > div{
 .d-none{
     display: none;
 }
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+  height: calc(100% - var(--topbar-height));
+
+  > .row {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping within rows */
+    width: 100%;
+
+    &:first-child {
+      height: auto; /* Use auto height for better responsiveness */
+    }
+
+    > .col {
+      flex: 1 1 100%; /* Default: Full width for small screens */
+
+      &.full {
+        width: 100%;
+        height: auto; /* Use auto to handle height naturally */
+      }
+
+      &.half {
+        flex: 1 1 50%; /* Half width */
+      }
+    }
+  }
+}
+
+/* Responsive Design with Media Queries */
+
+/* Tablets: 600px and up */
+@media (min-width: 600px) {
+  .grid > .row > .col.half {
+    flex: 1 1 50%; /* Half width on tablets */
+  }
+}
+
+/* Desktops: 900px and up */
+@media (min-width: 900px) {
+  .grid > .row > .col.half {
+    flex: 1 1 33.33%; /* Third width on larger screens */
+  }
+
+  luis-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
