@@ -1,4 +1,4 @@
-<div class="flex flex-wrap gap-3 p-fluid">
+<div class="flex flex-wrap gap-5 lg:gap-3 p-fluid align-items-center">
   <div class="flex-auto">
     <p-floatLabel>
       <p-dropdown
@@ -58,7 +58,7 @@
     [(ngModel)]="interpolate"
     [binary]="true"
     inputId="interpolate"></p-checkbox>
-    <label for="interpolate">Daten interpolieren</label>
+    <label for="interpolate"> Daten interpolieren</label>
   </div>
   <div class="flex-auto">
     <p-button label="Abrufen" (onClick)="gatherData()" [disabled]="!selectedStation || !selectedComponents
