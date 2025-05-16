@@ -1,51 +1,35 @@
-![Logo](https://git-iit.fh-joanneum.at/swd23-hackathon/luis-v2/-/raw/main/src/assets/logo/LuisV2Logo.png)
+# 🌱 LUIS V2 – Frontend
 
-# LUIS V2
+The frontend of **LUIS V2** (Air Quality Information System V2) provides a web-based application that makes air quality data from the Environmental Office of Styria accessible, analyzable, and exportable.
 
-LUIS ist ein Downloadtool für Wetter und Luftverschmutzungsdaten des Umweltamts Steiermark. Die aktuelle Version des Tools ist nicht mehr aktuell und soll modernisiert und verbessert werden. Ziel des Projekts ist es, die Daten nutzerfreundlich und verarbeitet für Benutzer:innen, darunter auch Data Analysts und Statistiker:innen, zur Verfügung zu stellen. UIS V2 ist ein Downloadtool für Wetter und Luftverschmutzungsdatan des Umweltamts Steiermark. Ziel ist es, die Daten nutzerfreundlich und verarbeitet für Benutzer:innen, darunter auch Data Analysts und Statistiker:innen, zur Verfügung zu stellen.
+## 🚀 Project Goal
 
-## Must-Have Funktionen
+The aim is to offer a user-friendly platform that processes local air quality data (e.g., particulate matter, nitrogen dioxide, ozone) from the region of Styria and makes it available in various formats (e.g., CSV, JSON) – for data analysts, environmental authorities, educators, and the general public.
 
-- Nutzerfreundliche Platform
-- Daten müssen schnell zusammengefasst und gedownloaded werden können. Dies sollte auch gemeinsam geschehen, d.h. eine Tabelle für einen Zeitraum soll
-mehrere Komponenten umfassen können. Dies soll auch über längere Zeiträume geschehen
-können, selbst wenn viele Daten auf einmal aufkommen (z.B. Halbstundenmittelwerte).
+---
 
-- Darstellungstool sollte inkludiert sein, das die gewünschten Daten passend
-darstellt.
+## 🔧 Technologies
 
-## Nice To Have Funktionen
+- **Programming Language**: TypeScript (Angular)
 
-- Downloadmöglichkeit in verschiedene Formate für Data Analysts (feather, parquet…) 
-- Erweiterte Dateninformation (Wochentage, Inversionsberechnung…)
-- Darstellungen können interativ zwischen Komponenten switchen
-- Option um fehlende Messwerte zu imputieren
-- (Für Startuplab) Option um Vorhersagen für Feinstaubwerte in den nächsten Tagen anzuzeigen
+---
 
-## Teammitglieder
-- Enthaler Tobias
-- Hanner Jakob
-- Inalov Achmad
+## 🤝 Contributing
 
+Pull requests are welcome! Please open an issue first if you want to make major changes.  
+Make sure to test your code and follow PEP8 formatting.
 
-## Demo
+---
 
-Aktuell kann das Tool hier verwendet werden:
-[Online DEV Version](https://luis-v2.projects.enthaler.dev/)
+## 📄 License
 
+MIT License – see [LICENSE](LICENSE)
 
-Um die App lokal auszuführen, folgen Sie diesen Schritten:
+---
 
-Klonen Sie das Repository:
-```
-git clone https://git-iit.fh-joanneum.at/swd23-hackathon/luis-v2.git
-```
+## 🧠 Contact & Team
 
-Installieren Sie die notwendigen Abhängigkeiten:
-```
-npm install
-```
-Starten Sie die Applikation:
-```
-npm run start
-```
+**Project Lead:** Tobias Enthaler  
+**Team:** Jakob Hanner, Achmad Inalov  
+**Project Name:** LUIS V2  
+**Contact:** *[GitHub Issues](https://github.com/luis-v2/luis-v2-forecast/issues)*
