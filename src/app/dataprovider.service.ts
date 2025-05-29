@@ -30,13 +30,23 @@ export class DataproviderService {
   CORSPROXYURL: string = 'https://cors-proxy.s1.enthaler.dev/';
   SCRAPEURL: string = 'app.luis.steiermark.at/luft2/suche.php?';
 
+
+  toDateWithCorrectUTC(date: Date): Date {
+    const local = new Date(date);
+    local.setHours(0, 0, 0, 0); // lokale Mitternacht
+    // Zeit um Zeitzonenoffset zurückstellen (in ms)
+    const correctedTime = local.getTime() - local.getTimezoneOffset() * 60000;
+    return new Date(correctedTime);
+  } 
+
+
   getDataPoints(station: Station, components: StationComponent[], range: Date[], average: Average, interpolate: boolean) {
 
     let reqestBody: DataRequest = {
       station: station.id,
       components: components.map(c => c.id),
-      startDate: range[0],
-      endDate: range[1],
+      startDate: this.toDateWithCorrectUTC(range[0]),
+      endDate: this.toDateWithCorrectUTC(range[1] ?? range[0]),
       average: average.id,
       interpolate: interpolate,
       fileFormat: 'json'
