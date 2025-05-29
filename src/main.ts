@@ -2,17 +2,23 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { ConfigService } from './app/config.service';
+import { APP_INITIALIZER } from '@angular/core';
 
-const configService = new ConfigService();
+export function loadConfig(configService: ConfigService) {
+  return () => configService.loadConfig();
+}
 
-
-configService.loadConfig().then(() => {
-    bootstrapApplication(AppComponent, {
+bootstrapApplication(AppComponent, {
       ...appConfig,
       providers: [
-      { provide: ConfigService, useValue: configService },
-      ...(appConfig.providers || [])
+        ConfigService,
+        {
+          provide: APP_INITIALIZER,
+          useFactory: loadConfig,
+          deps: [ConfigService],
+          multi: true
+        },
+        ...(appConfig.providers || [])
       ]
     })
     .catch((err) => console.error(err));
-});

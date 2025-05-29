@@ -18,7 +18,7 @@ export class DataproviderService {
 
   constructor(private httpClient: HttpClient, private messageService: MessageService, private configService: ConfigService) {
     this.dataLoaded = new EventEmitter<DataPoint[]>();
-    this.BASEURL = this.configService.apiBaseUrl;
+    this.BASEURL = this.configService.config.apiBaseUrl;
   }
 
 
