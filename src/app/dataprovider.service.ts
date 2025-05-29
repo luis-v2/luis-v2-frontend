@@ -7,18 +7,20 @@ import { DataPoint } from '../interfaces/dataPoint.interface';
 import { Average } from '../interfaces/average.interface';
 import { MessageService } from 'primeng/api';
 import { DataRequest } from '../interfaces/dataRequest.interface';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataproviderService {
   dataLoaded: EventEmitter<DataPoint[]>;
+  BASEURL: string = "";
 
-  constructor(private httpClient: HttpClient, private messageService: MessageService) {
+  constructor(private httpClient: HttpClient, private messageService: MessageService, private configService: ConfigService) {
     this.dataLoaded = new EventEmitter<DataPoint[]>();
+    this.BASEURL = this.configService.apiBaseUrl;
   }
 
-  BASEURL: string = 'http://localhost:8080/api/';
 
   STATION: string = 'station1';
   KOMPONENTE: string = 'komponente1';
