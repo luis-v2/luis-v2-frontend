@@ -7,22 +7,25 @@ import { FormsModule } from '@angular/forms';
 import { DataproviderService } from '../dataprovider.service';
 import { Subject, takeUntil } from 'rxjs';
 import { Trend } from '../../interfaces/trend.interface';
-import { NgClass, NgFor } from '@angular/common';
+import { DecimalPipe, NgClass, NgFor } from '@angular/common';
+import { Utils } from '../utils';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'luis-trends',
   standalone: true,
-  imports: [CardModule, DropdownModule, FloatLabelModule, FormsModule, NgFor, NgClass],
+  imports: [CardModule, DropdownModule, FloatLabelModule, FormsModule, NgFor, NgClass, DecimalPipe, DialogModule],
   templateUrl: './trends.component.html',
   styleUrl: './trends.component.scss'
 })
 export class TrendsComponent implements OnInit, OnDestroy {
   stations?: Station[];
   selectedStation?: Station;
+  loading: boolean = false;
 
   timespans: any[] = [
-    { label: 'Woche', value: 'week'},
-    { label: 'Monat', value: 'month'}
+    { label: 'Woche', value: 7},
+    { label: 'Monat', value: 30}
   ];
   selectedTimespan = this.timespans[0];
 
@@ -57,10 +60,17 @@ export class TrendsComponent implements OnInit, OnDestroy {
   }
 
   loadTrends() {
-    // DEMO DATA
-    this.dataProvider.getAvailableComponents(this.selectedStation!).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
-      this.trends = this.selectedStation?.availableComponents?.map(c => <Trend>{ component: c, previousValue: 10, currentValue: 15});
+    this.loading = true;
+    this.dataProvider.getTrends(this.selectedStation!, this.selectedTimespan.value).subscribe(r => {
+      this.trends = r;
+      this.loading = false;
     });
+  }
+
+  getDateIntervalLabel() {
+    const previousStart = Utils.getDateXDaysAgo(this.selectedTimespan.value * 2);
+    const currentStart = Utils.getDateXDaysAgo(this.selectedTimespan.value);
+    return `Diese Zeitspanne: ${currentStart} - ${Utils.getDateXDaysAgo(0)}<br/>Letzte Zeitspanne: ${previousStart} - ${currentStart}`;
   }
   
 }

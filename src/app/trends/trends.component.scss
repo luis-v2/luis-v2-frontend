@@ -7,6 +7,10 @@
     p-dropdown > ::ng-deep div {
         min-width: 320px;
     }
+
+    > div {
+        align-content: center;
+    }
 }
 
 .x-cards-wrapper {
@@ -14,8 +18,8 @@
     gap: 10px;
     padding: 10px;
     flex-wrap: wrap;
-    overflow: scroll;
-    height: calc(100% - 190px);
+    overflow: auto;
+    max-height: calc(100% - 190px);
 }
 
 .x-card-container {
@@ -32,8 +36,12 @@
     width: 40px;
     text-align: center;
 
-    > i {
+    > i.pi-chevron-down {
         color: #10b981;
+    }
+
+    > i.pi-chevron-up {
+        color: #de1b1b;
     }
 }
 
@@ -44,4 +52,22 @@
 
 .x-component-name {
     font-weight: bold;
+}
+
+.loading-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    
+        > span > i {
+            font-size: 3rem;
+        }
+    }
 }

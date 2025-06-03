@@ -8,6 +8,7 @@ import { Average } from '../interfaces/average.interface';
 import { MessageService } from 'primeng/api';
 import { DataRequest } from '../interfaces/dataRequest.interface';
 import { ConfigService } from './config.service';
+import { Trend } from '../interfaces/trend.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -90,6 +91,14 @@ export class DataproviderService {
     return new Observable<Average[]>(obs => {
       this.httpClient.get(this.BASEURL + 'average').subscribe(r => {
         obs.next(r as Average[]);
+      });
+    });
+  }
+
+  getTrends(station: Station, interval: number): Observable<Trend[]> {
+    return new Observable<Trend[]>(obs => {
+      this.httpClient.get(this.BASEURL + `trend?stationId=${station.id}&days=${interval}`).subscribe(r => {
+        obs.next(r as Trend[]);
       });
     });
   }
