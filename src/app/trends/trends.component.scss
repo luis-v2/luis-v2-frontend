@@ -1,0 +1,73 @@
+.x-selection {
+    display: flex;
+    padding: 35px 10px;
+    gap: 10px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.0196078431), 0 0 2px rgba(0, 0, 0, 0.0509803922), 0 1px 4px rgba(0, 0, 0, 0.0784313725);
+
+    p-dropdown > ::ng-deep div {
+        min-width: 320px;
+    }
+
+    > div {
+        align-content: center;
+    }
+}
+
+.x-cards-wrapper {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    flex-wrap: wrap;
+    overflow: auto;
+    max-height: calc(100% - 190px);
+}
+
+.x-card-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.x-icon-wrapper {
+    padding: 10px;
+    background-color: #e8e8e8;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    text-align: center;
+
+    > i.pi-chevron-down {
+        color: #10b981;
+    }
+
+    > i.pi-chevron-up {
+        color: #de1b1b;
+    }
+}
+
+.x-card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.x-component-name {
+    font-weight: bold;
+}
+
+.loading-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    
+        > span > i {
+            font-size: 3rem;
+        }
+    }
+}

@@ -81,7 +81,7 @@ export class SelectionComponent implements OnInit, OnDestroy {
     this.dateRange = [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), new Date(new Date().setHours(0,0,0,0))];
 
     // get components for preselected station
-    this.dataProvider.getAvailableComponents(this.selectedStation).pipe(takeUntil(this.unsubscribe$)).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
+    this.dataProvider.getAvailableComponents(this.selectedStation).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
       // select components: 125 = pm10, 8 = lute, 29 = co
       this.selectedComponents = this.selectedStation?.availableComponents?.filter(x => [125, 8, 29].includes(x.id));
 

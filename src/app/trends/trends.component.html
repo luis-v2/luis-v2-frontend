@@ -1,0 +1,62 @@
+<div class="x-selection">
+    <p-floatLabel>
+      <p-dropdown
+          [options]="stations"
+          [(ngModel)]="selectedStation"
+          optionLabel="name"
+          placeholder="Station auswählen ..."
+          (onChange)="onStationSelect($event)"
+          [filter]="true"
+          filterBy="name"
+          inputId="stationSelect" />
+      <label for="stationSelect">Station auswählen ...</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <p-dropdown
+          [options]="timespans"
+          [(ngModel)]="selectedTimespan"
+          optionLabel="label"
+          placeholder="Zeitspanne auswählen ..."
+          (onChange)="onTimespanSelect($event)"
+          [filter]="true"
+          inputId="timespanSelect" />
+      <label for="timespanSelect">Zeitspanne auswählen ...</label>
+    </p-floatLabel>
+
+    <div>
+        <span [innerHTML]="getDateIntervalLabel()"></span>
+    </div>
+</div>
+
+<div class="x-cards-wrapper">
+    <p-card *ngFor="let trend of trends">
+        <div class="x-card-container">
+            <div class="x-icon-wrapper">
+                <i class="pi" [ngClass]="{'pi-chevron-up': trend.previousValue > trend.currentValue, 'pi-chevron-down': trend.previousValue <= trend.currentValue}"></i>
+            </div>
+            <div class="x-card-content">
+                <span class="x-component-name">{{ trend.component.name }}</span>
+                <span>Diese Zeitspanne: {{ trend.previousValue | number: '1.2-2' }} {{ trend.component.unit }}</span>
+                <span>Letzte Zeitspanne: {{ trend.currentValue | number: '1.2-2' }} {{ trend.component.unit }}</span>
+            </div>
+        </div>
+    </p-card>
+</div>
+
+<p-dialog
+  [modal]="true"
+  [(visible)]="loading"
+  [closable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="false"
+  [style]="{ width: '250px', height: '250px'}">
+  <div class="loading-box">
+    <div>
+      <span>
+        <i class="pi pi-spin pi-spinner"></i>
+      </span>
+      <span>Daten werden geladen ...</span>
+    </div>
+  </div>
+</p-dialog>
