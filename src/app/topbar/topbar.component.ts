@@ -26,6 +26,11 @@ export class TopbarComponent {
       label: 'Trends',
       icon: 'pi pi-chart-line',
       routerLink: 'trends'
+    },
+    {
+      label: 'Charts',
+      icon: 'pi pi-chart-bar',
+      routerLink: 'charts'
     }
   ]
 

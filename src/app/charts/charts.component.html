@@ -1,0 +1,7 @@
+<div class="x-selection">
+    <luis-selection></luis-selection>
+    <p-button label="Herunterladen" (onClick)="downloadChartImage()"/>
+</div>
+<div class="x-chart-wrapper">
+    <p-chart #chart type="line" [data]="chartData" [options]="{ maintainAspectRatio: false, animation: false, normalized: true, spanGaps: true, elements: { point: { radius: 0 }, line: { borderWidth: 1} } }" [height]="'calc(100% - 300px)'"/>
+</div>
