@@ -17,7 +17,7 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns">
             <tr>
                 <td *ngFor="let col of columns"
-                    [ngClass]="{'cell-empty': isColumnEmpty(rowData[col.field]), 'cell-interpolated': isColumnInterpolated(rowData, col.field)}">
+                    [ngClass]="{'cell-empty': isColumnEmpty(rowData[col.field]), 'cell-interpolated': isColumnInterpolated(rowData, col.field), 'cell-forecast': isColumnForecasted(rowData, col.field)}">
 
                     {{ rowData[col.field] | dynamic: col.pipe?.type : col.pipe?.args }}
                 </td>

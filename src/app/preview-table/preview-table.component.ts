@@ -47,4 +47,8 @@ export class PreviewTableComponent implements OnInit, OnDestroy {
   isColumnInterpolated(data: DataPoint, field: string) {
     return data.interpolated?.includes(field);
   }
+
+  isColumnForecasted(data: DataPoint, field: string) {
+    return data.timestamp.getTime() > Date.now();
+  }
 }

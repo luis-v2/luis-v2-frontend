@@ -5,5 +5,6 @@ export interface DataRequest {
     endDate: Date;
     average: number;
     interpolate: boolean;
+    addForecasts: boolean;
     fileFormat: 'json' | 'csv' | 'parquet';
 }

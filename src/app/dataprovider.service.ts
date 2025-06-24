@@ -52,6 +52,7 @@ export class DataproviderService {
       endDate: this.toDateWithCorrectUTC(range[1] ?? range[0]),
       average: average.id,
       interpolate: interpolate,
+      addForecasts: this.toDateWithCorrectUTC(range[1] ?? range[0]) > new Date(),
       fileFormat: 'json'
     };
 

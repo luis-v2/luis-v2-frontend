@@ -26,7 +26,7 @@ export class SelectionComponent implements OnInit, OnDestroy {
   selectedStation?: Station;
   selectedComponents?: StationComponent[];
   dateRange?: Date[];
-  today?: Date;
+  maxDate?: Date;
   averageOptions?: Average[];
   selectedAverage?: Average;
   interpolate?: boolean = false;
@@ -37,7 +37,7 @@ export class SelectionComponent implements OnInit, OnDestroy {
   constructor(private dataProvider: DataproviderService) {}
 
   ngOnInit(): void {
-    this.today = new Date();
+    this.maxDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
 
     this.dataProvider.getAvailableStations().pipe(takeUntil(this.unsubscribe$)).subscribe(r => {
       this.stations = r;
