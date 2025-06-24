@@ -15,6 +15,7 @@ import {FormsModule} from '@angular/forms';
 import {FileType} from '../../interfaces/file-type';
 import { ToastModule } from 'primeng/toast';
 import * as Papa from 'papaparse';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'luis-dashboard',
@@ -45,7 +46,7 @@ export class DashboardComponent  implements OnInit {
 
   private unsubscribe$ = new Subject<void>();
 
-  constructor(private primeNgConfig: PrimeNGConfig,private dataProvider: DataproviderService) {}
+  constructor(private primeNgConfig: PrimeNGConfig,private dataProvider: DataproviderService, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.primeNgConfig.setTranslation({
@@ -57,6 +58,7 @@ export class DashboardComponent  implements OnInit {
     this.fileTypes = [
       { name: 'JSON', code: 'json'},
       { name: 'CSV', code: 'csv'},
+      { name: 'PARQUET', code: 'parquet'}
     ];
     this.selectedFiletype =  { name: 'JSON', code: 'json'};
 
@@ -76,8 +78,29 @@ export class DashboardComponent  implements OnInit {
 
   downloadData(fileType: string | undefined):void{
     if (this.dataGathered && fileType != undefined) {
+
+            
+    let fileName = this.createFileName(this.dataGathered)
+
+    if (fileType === 'parquet') {
+
+      const request = this.dataProvider.lastRequest;
+
+      if (!request) {
+        console.error("Kein DataRequest gefunden!");
+        return;
+      }
+      request.fileFormat = 'parquet';
+
+
+      this.http.post(this.dataProvider.BASEURL + 'data', request, {
+        responseType: 'blob'
+      }).subscribe((blob: Blob) => {
+        this.downloadFile(blob, fileType, fileName);
+      });
+
+    } else {
       let blob = new Blob;
-      let fileName = this.createFileName(this.dataGathered)
       switch (fileType) {
         case 'csv':
           let csvData  = Papa.unparse(this.dataGathered,{delimiter: ";"});
@@ -90,6 +113,7 @@ export class DashboardComponent  implements OnInit {
       }
       this.downloadFile(blob, fileType, fileName);
     }
+  }
   }
 
   downloadFile(file:Blob, fileType:String, fileName:String|undefined):void{

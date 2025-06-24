@@ -16,6 +16,8 @@ import { Trend } from '../interfaces/trend.interface';
 export class DataproviderService {
   dataLoaded: EventEmitter<DataPoint[]>;
   BASEURL: string = "";
+  lastRequest: DataRequest | undefined;
+
 
   constructor(private httpClient: HttpClient, private messageService: MessageService, private configService: ConfigService) {
     this.dataLoaded = new EventEmitter<DataPoint[]>();
@@ -52,6 +54,8 @@ export class DataproviderService {
       interpolate: interpolate,
       fileFormat: 'json'
     };
+
+    this.lastRequest = reqestBody;
 
     return new Observable<DataPoint[]>(obs => {
       this.httpClient.post<DataPoint[]>(this.BASEURL + 'data', reqestBody)
