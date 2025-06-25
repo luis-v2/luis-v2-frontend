@@ -60,9 +60,54 @@ export class DataproviderService {
 
     return new Observable<DataPoint[]>(obs => {
       this.httpClient.post<DataPoint[]>(this.BASEURL + 'data', reqestBody)
-      .pipe(map(data => data.map(d => ({...d, timestamp: new Date(d.timestamp)})))).subscribe((r) => {
-        this.dataLoaded.emit(r);
-        obs.next(r);
+      .pipe(map(data => <DataPoint[]>data.map(d => ({...d, timestamp: new Date(d.timestamp)})))).subscribe((data) => {
+
+        if (interpolate) {
+            let getFilledValue = (d: DataPoint[], i: number, k: string, increase: boolean) => {
+              i = increase ? (i + 1) : (i - 1);
+  
+              if (i < 0 || i >= data.length) return;
+  
+              // value found
+              if (data[i][k] != undefined) {
+                return { value: data[i][k], index: i};
+              }
+
+              // move one step up/down
+              return getFilledValue(d, i, k, increase);
+            }
+
+  
+            let keys = Object.keys(data[0]);
+            keys.forEach(key => { // loop through each available key
+              data.forEach((x, i) => { // loop thorugh all datapoints
+                if (x[key] == undefined) { // check if key is empty at this datapoint
+
+                  // get nearest filled datapoint in both directions
+                  let before = getFilledValue(data, i, key, false);
+                  let next = getFilledValue(data, i, key, true);
+  
+                  // if datapoint is found for both directions
+                  if (before && next) {
+                    let bi = (i - before.index);
+                    let ni = (next.index - i);
+
+                    // if distance is less than 10 datapoints
+                    if ((bi + ni) <= 10) {
+                      // calculate value
+                      x[key] = Number(((before.value + next.value) / 2).toFixed(4));
+
+                      // mark datapoint as interpolated for visualization
+                      x.interpolated?.push(key) ?? (x.interpolated = [key]);
+                    }
+                  }
+                }
+              });
+            });
+          }
+
+        this.dataLoaded.emit(data);
+        obs.next(data);
       });
     });
   }
